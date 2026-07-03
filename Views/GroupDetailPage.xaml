@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SplitBillApp.ViewModels"
+             xmlns:models="clr-namespace:SplitBillApp.Models"
+             xmlns:services="clr-namespace:SplitBillApp.Services"
+             x:Class="SplitBillApp.Views.GroupDetailPage"
+             x:DataType="vm:GroupDetailViewModel"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="18">
+
+            <!-- People -->
+            <Label Text="People" FontSize="18" FontAttributes="Bold" />
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <Entry Grid.Column="0" Placeholder="Add a person"
+                       Text="{Binding NewPersonName}"
+                       ReturnCommand="{Binding AddPersonCommand}" />
+                <Button Grid.Column="1" Text="Add" Command="{Binding AddPersonCommand}" />
+            </Grid>
+            <FlexLayout BindableLayout.ItemsSource="{Binding People}"
+                        Wrap="Wrap" JustifyContent="Start">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="models:Person">
+                        <Border Stroke="#DDD" StrokeShape="RoundRectangle 16"
+                                Padding="10,6" Margin="0,4,8,0" BackgroundColor="#F5F5F5">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GroupDetailViewModel}}, Path=DeletePersonCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{Binding Name}" FontSize="14" />
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </FlexLayout>
+
+            <!-- Expenses -->
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Grid.Column="0" Text="Expenses" FontSize="18" FontAttributes="Bold"
+                       VerticalOptions="Center" />
+                <Button Grid.Column="1" Text="+ Add" Command="{Binding AddExpenseCommand}" />
+            </Grid>
+            <CollectionView ItemsSource="{Binding Expenses}">
+                <CollectionView.EmptyView>
+                    <Label Text="No expenses yet." TextColor="#888" />
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Expense">
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Delete" BackgroundColor="#E53935"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GroupDetailViewModel}}, Path=DeleteExpenseCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <Grid ColumnDefinitions="*,Auto" Padding="4,10">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="{Binding Description}" FontAttributes="Bold" />
+                                    <Label Text="{Binding PaidByName, StringFormat='Paid by {0}'}"
+                                           FontSize="13" TextColor="#888" />
+                                </VerticalStackLayout>
+                                <Label Grid.Column="1" VerticalOptions="Center"
+                                       Text="{Binding Amount, StringFormat='{0:N2}'}"
+                                       FontAttributes="Bold" />
+                            </Grid>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Settlement -->
+            <Label Text="Who pays whom" FontSize="18" FontAttributes="Bold" />
+            <Border Stroke="#C8E6C9" StrokeShape="RoundRectangle 12"
+                    BackgroundColor="#F1F8E9" Padding="12">
+                <CollectionView ItemsSource="{Binding Settlements}">
+                    <CollectionView.EmptyView>
+                        <Label Text="All settled up! 🎉" TextColor="#2E7D32" />
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="services:Settlement">
+                            <Grid ColumnDefinitions="*,Auto" Padding="0,6">
+                                <Label Grid.Column="0" VerticalOptions="Center">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding FromName}" FontAttributes="Bold" />
+                                            <Span Text="  →  " TextColor="#888" />
+                                            <Span Text="{Binding ToName}" FontAttributes="Bold" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Grid.Column="1" Text="{Binding Amount, StringFormat='{0:N2}'}"
+                                       FontAttributes="Bold" TextColor="#2E7D32" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
