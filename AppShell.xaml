@@ -3,9 +3,9 @@
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        xmlns:views="clr-namespace:SplitBillApp.Views"
        x:Class="SplitBillApp.AppShell"
-       Title="Split Bill">
+       FlyoutBehavior="Disabled">
 
-    <ShellContent Title="Groups"
-                  ContentTemplate="{DataTemplate views:GroupsPage}"
-                  Route="GroupsPage" />
+    <ShellContent Title="Split"
+                  ContentTemplate="{DataTemplate views:HomePage}"
+                  Route="HomePage" />
 </Shell>

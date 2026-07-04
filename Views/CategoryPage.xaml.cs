@@ -2,9 +2,9 @@ using SplitBillApp.ViewModels;
 
 namespace SplitBillApp.Views;
 
-public partial class AddExpensePage : ContentPage
+public partial class CategoryPage : ContentPage
 {
-    public AddExpensePage(AddExpenseViewModel vm)
+    public CategoryPage(CategoryViewModel vm)
     {
         InitializeComponent();
         BindingContext = vm;

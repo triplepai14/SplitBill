@@ -2,11 +2,11 @@ using SplitBillApp.ViewModels;
 
 namespace SplitBillApp.Views;
 
-public partial class GroupsPage : ContentPage
+public partial class MenusPage : ContentPage
 {
-    private readonly GroupsViewModel _vm;
+    private readonly MenusViewModel _vm;
 
-    public GroupsPage(GroupsViewModel vm)
+    public MenusPage(MenusViewModel vm)
     {
         InitializeComponent();
         BindingContext = _vm = vm;

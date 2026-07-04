@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SplitBillApp.ViewModels"
+             x:Class="SplitBillApp.Views.ResultPage"
+             x:DataType="vm:ResultViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Header -->
+        <HorizontalStackLayout Grid.Row="0" Spacing="10" Padding="16,10,16,12" VerticalOptions="Center">
+            <Button Text="‹" Style="{StaticResource IconButton}" Command="{Binding DoneCommand}" />
+            <Label Text="{Binding ResultTitle}" Style="{StaticResource H2}" VerticalOptions="Center"
+                   LineBreakMode="TailTruncation" />
+        </HorizontalStackLayout>
+
+        <ScrollView Grid.Row="1" Padding="20,6,20,24">
+            <VerticalStackLayout Spacing="0">
+
+                <!-- Hero total -->
+                <Border BackgroundColor="{StaticResource Accent}" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 24" Padding="24">
+                    <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                        <Label Text="Total bill" TextColor="White" Opacity="0.85" FontFamily="PJSansSemibold"
+                               FontSize="13" HorizontalOptions="Center" />
+                        <Label Text="{Binding TotalLabel}" TextColor="White" FontFamily="PJSansExtra"
+                               FontSize="42" HorizontalOptions="Center" />
+                        <HorizontalStackLayout Spacing="6" HorizontalOptions="Center">
+                            <Label Text="{Binding PaidByLabel}" TextColor="White" Opacity="0.9"
+                                   FontFamily="PJSansSemibold" FontSize="13" />
+                            <Label Text="·" TextColor="White" Opacity="0.9" FontSize="13" />
+                            <Label Text="{Binding PerHeadLabel}" TextColor="White" Opacity="0.9"
+                                   FontFamily="PJSansSemibold" FontSize="13" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label Text="EACH PERSON'S SHARE" Style="{StaticResource SectionLabel}" Margin="4,24,4,11" />
+                <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Rows}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ResultRowVM">
+                            <Border BackgroundColor="{Binding RowBg}" Stroke="{Binding RowStroke}"
+                                    StrokeThickness="1" StrokeShape="RoundRectangle 20" Padding="14,13">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                    <Border Grid.Column="0" WidthRequest="40" HeightRequest="40"
+                                            BackgroundColor="{Binding AvatarColor}" StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 40" VerticalOptions="Center">
+                                        <Label Text="{Binding Initial}" TextColor="White" FontFamily="PJSansBold"
+                                               FontSize="16" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" FontFamily="PJSansBold" FontSize="15" />
+                                        <Label Text="{Binding Sub}" Style="{StaticResource Muted}" FontSize="12" />
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="2" Spacing="1" HorizontalOptions="End"
+                                                         VerticalOptions="Center">
+                                        <Label Text="{Binding AmountLabel}" TextColor="{Binding AmountColor}"
+                                               FontFamily="PJSansExtra" FontSize="17" HorizontalOptions="End" />
+                                        <Label Text="{Binding Tag}" FontFamily="PJSansBold" FontSize="11"
+                                               TextColor="{StaticResource SubText}" HorizontalOptions="End" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <!-- Settle up -->
+                <VerticalStackLayout IsVisible="{Binding HasSettlements}" Spacing="0">
+                    <Label Text="SETTLE UP" Style="{StaticResource SectionLabel}" Margin="4,24,4,11" />
+                    <VerticalStackLayout Spacing="9" BindableLayout.ItemsSource="{Binding Settlements}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:SettlementVM">
+                                <Border BackgroundColor="{StaticResource Surface}" Stroke="{StaticResource LineColor}"
+                                        StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="14,12">
+                                    <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" ColumnSpacing="9">
+                                        <Border Grid.Column="0" WidthRequest="28" HeightRequest="28"
+                                                BackgroundColor="{Binding FromColor}" StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 40" VerticalOptions="Center">
+                                            <Label Text="{Binding FromInitial}" TextColor="White"
+                                                   FontFamily="PJSansBold" FontSize="12"
+                                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+                                        <Label Grid.Column="1" Text="{Binding FromName}" FontFamily="PJSansBold"
+                                               FontSize="14" VerticalOptions="Center" />
+                                        <Label Grid.Column="2" Text="→" TextColor="{StaticResource SubText}"
+                                               FontSize="16" VerticalOptions="Center" />
+                                        <Border Grid.Column="3" WidthRequest="28" HeightRequest="28"
+                                                BackgroundColor="{Binding ToColor}" StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 40" VerticalOptions="Center">
+                                            <Label Text="{Binding ToInitial}" TextColor="White"
+                                                   FontFamily="PJSansBold" FontSize="12"
+                                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+                                        <Label Grid.Column="4" Text="{Binding ToName}" FontFamily="PJSansBold"
+                                               FontSize="14" VerticalOptions="Center" />
+                                        <Label Grid.Column="5" Text="{Binding AmountLabel}"
+                                               TextColor="{StaticResource Accent}" FontFamily="PJSansExtra"
+                                               FontSize="15" VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Footer -->
+        <Grid Grid.Row="2" Padding="20,14,20,28">
+            <Button Text="{Binding DoneLabel}" Command="{Binding DoneCommand}"
+                    Style="{StaticResource PrimaryButton}" />
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SplitBillApp.ViewModels"
+             x:Class="SplitBillApp.Views.CreateBillPage"
+             x:DataType="vm:CreateBillViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Header -->
+        <HorizontalStackLayout Grid.Row="0" Spacing="10" Padding="16,10,16,12" VerticalOptions="Center">
+            <Button Text="‹" Style="{StaticResource IconButton}" Command="{Binding BackCommand}" />
+            <Label Text="New bill" Style="{StaticResource H2}" VerticalOptions="Center" />
+        </HorizontalStackLayout>
+
+        <ScrollView Grid.Row="1" Padding="22,6,22,24">
+            <VerticalStackLayout Spacing="0">
+
+                <Label Text="Bill name" Style="{StaticResource SectionLabel}" Margin="4,6,4,9" />
+                <Border Style="{StaticResource Field}">
+                    <Entry Text="{Binding BillName}" Placeholder="e.g. Friday dinner" FontSize="16" />
+                </Border>
+
+                <Label Text="Category · optional" Style="{StaticResource SectionLabel}" Margin="4,22,4,9" />
+                <FlexLayout Wrap="Wrap" Direction="Row"
+                            BindableLayout.ItemsSource="{Binding CategoryChips}"
+                            BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0">
+                    <Border Grid.Column="0" Style="{StaticResource Field}" StrokeShape="RoundRectangle 12">
+                        <Entry Text="{Binding NewCategoryName}" Placeholder="New category…" FontSize="14" />
+                    </Border>
+                    <Button Grid.Column="1" Text="Add" Command="{Binding AddCategoryCommand}"
+                            BackgroundColor="{StaticResource Surface2}" TextColor="{StaticResource TextColor}"
+                            FontFamily="PJSansBold" FontSize="14" CornerRadius="12" BorderWidth="0"
+                            HeightRequest="44" Padding="16,0" />
+                </Grid>
+
+                <Label Text="Who's splitting?" Style="{StaticResource SectionLabel}" Margin="4,24,4,9" />
+                <FlexLayout Wrap="Wrap" Direction="Row"
+                            BindableLayout.ItemsSource="{Binding PeopleChips}"
+                            BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0">
+                    <Border Grid.Column="0" Style="{StaticResource Field}" StrokeShape="RoundRectangle 12">
+                        <Entry Text="{Binding NewPersonName}" Placeholder="Add someone new…" FontSize="14" />
+                    </Border>
+                    <Button Grid.Column="1" Text="Add" Command="{Binding AddPersonCommand}"
+                            BackgroundColor="{StaticResource Surface2}" TextColor="{StaticResource TextColor}"
+                            FontFamily="PJSansBold" FontSize="14" CornerRadius="12" BorderWidth="0"
+                            HeightRequest="44" Padding="16,0" />
+                </Grid>
+
+                <VerticalStackLayout IsVisible="{Binding HasPeople}" Spacing="0">
+                    <Label Text="Who paid? · they cover the bill" Style="{StaticResource SectionLabel}"
+                           Margin="4,24,4,9" />
+                    <FlexLayout Wrap="Wrap" Direction="Row"
+                                BindableLayout.ItemsSource="{Binding PayerChips}"
+                                BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Footer -->
+        <Grid Grid.Row="2" Padding="20,14,20,28">
+            <Button Text="Continue" Command="{Binding ContinueCommand}"
+                    Style="{StaticResource PrimaryButton}" Opacity="{Binding ContinueOpacity}" />
+        </Grid>
+    </Grid>
+</ContentPage>

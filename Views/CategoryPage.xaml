@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SplitBillApp.ViewModels"
+             x:Class="SplitBillApp.Views.CategoryPage"
+             x:DataType="vm:CategoryViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Header -->
+        <HorizontalStackLayout Grid.Row="0" Spacing="10" Padding="16,10,16,12" VerticalOptions="Center">
+            <Button Text="‹" Style="{StaticResource IconButton}" Command="{Binding BackCommand}" />
+            <Label Text="{Binding CatTitle}" Style="{StaticResource H2}" VerticalOptions="Center" />
+        </HorizontalStackLayout>
+
+        <ScrollView Grid.Row="1" Padding="20,6,20,28">
+            <VerticalStackLayout Spacing="0">
+
+                <!-- Total card -->
+                <Border Style="{StaticResource Card}" Padding="22" StrokeShape="RoundRectangle 24">
+                    <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                        <Label Text="{Binding CatCountLabel, StringFormat='Total across {0}'}"
+                               Style="{StaticResource Muted}" HorizontalOptions="Center" />
+                        <Label Text="{Binding CatTotalLabel}" FontFamily="PJSansExtra" FontSize="38"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label Text="BILLS" Style="{StaticResource SectionLabel}" Margin="4,22,4,11" />
+                <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Bills}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CatBillVM">
+                            <Border BackgroundColor="{StaticResource Surface}" Stroke="{StaticResource LineColor}"
+                                    StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="16,14">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenCommand}" />
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" FontFamily="PJSansBold" FontSize="15" />
+                                        <Label Text="{Binding PaidByLabel}" Style="{StaticResource Muted}" FontSize="12" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="1" Text="{Binding TotalLabel}" FontFamily="PJSansExtra"
+                                           FontSize="16" VerticalOptions="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <Label Text="SPENT PER PERSON" Style="{StaticResource SectionLabel}" Margin="4,22,4,11" />
+                <VerticalStackLayout Spacing="9" BindableLayout.ItemsSource="{Binding People}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CatPersonVM">
+                            <Border BackgroundColor="{StaticResource Surface}" Stroke="{StaticResource LineColor}"
+                                    StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="14,11">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="11">
+                                    <Border Grid.Column="0" WidthRequest="32" HeightRequest="32"
+                                            BackgroundColor="{Binding AvatarColor}" StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 40" VerticalOptions="Center">
+                                        <Label Text="{Binding Initial}" TextColor="White" FontFamily="PJSansBold"
+                                               FontSize="13" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Border>
+                                    <Label Grid.Column="1" Text="{Binding Name}" FontFamily="PJSansBold"
+                                           FontSize="15" VerticalOptions="Center" />
+                                    <Label Grid.Column="2" Text="{Binding AmountLabel}" FontFamily="PJSansExtra"
+                                           FontSize="15" VerticalOptions="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

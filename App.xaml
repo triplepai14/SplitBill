@@ -4,16 +4,10 @@
              x:Class="SplitBillApp.App">
     <Application.Resources>
         <ResourceDictionary>
-            <Color x:Key="Primary">#2E7D32</Color>
-            <Style TargetType="Button">
-                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
-                <Setter Property="TextColor" Value="White" />
-                <Setter Property="CornerRadius" Value="8" />
-                <Setter Property="Padding" Value="14,8" />
-            </Style>
-            <Style TargetType="Entry">
-                <Setter Property="ClearButtonVisibility" Value="WhileEditing" />
-            </Style>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

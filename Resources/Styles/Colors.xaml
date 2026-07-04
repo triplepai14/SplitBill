@@ -41,4 +41,23 @@
     <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
     <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
     <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
+
+    <!-- ============================================================= -->
+    <!--  Split · "Garden" theme (from the Claude design system)        -->
+    <!-- ============================================================= -->
+    <Color x:Key="AppBg">#F2F4F0</Color>       <!-- page background      -->
+    <Color x:Key="Surface">#FFFFFF</Color>     <!-- cards / inputs       -->
+    <Color x:Key="Surface2">#F6F8F4</Color>    <!-- subtle fills         -->
+    <Color x:Key="TextColor">#16201A</Color>   <!-- primary text         -->
+    <Color x:Key="SubText">#6A756F</Color>     <!-- secondary text       -->
+    <Color x:Key="Accent">#1F8A5B</Color>      <!-- brand green          -->
+    <Color x:Key="AccentSoft">#E4F1EA</Color>  <!-- soft green fill      -->
+    <Color x:Key="LineColor">#E7EAE4</Color>   <!-- hairline borders     -->
+
+    <SolidColorBrush x:Key="AppBgBrush" Color="{StaticResource AppBg}" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource Surface}" />
+    <SolidColorBrush x:Key="Surface2Brush" Color="{StaticResource Surface2}" />
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource Accent}" />
+    <SolidColorBrush x:Key="AccentSoftBrush" Color="{StaticResource AccentSoft}" />
+    <SolidColorBrush x:Key="LineBrush" Color="{StaticResource LineColor}" />
 </ResourceDictionary>

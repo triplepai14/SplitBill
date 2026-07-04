@@ -2,11 +2,11 @@ using SplitBillApp.ViewModels;
 
 namespace SplitBillApp.Views;
 
-public partial class GroupDetailPage : ContentPage
+public partial class HomePage : ContentPage
 {
-    private readonly GroupDetailViewModel _vm;
+    private readonly HomeViewModel _vm;
 
-    public GroupDetailPage(GroupDetailViewModel vm)
+    public HomePage(HomeViewModel vm)
     {
         InitializeComponent();
         BindingContext = _vm = vm;
