@@ -30,7 +30,7 @@ public class DatabaseService
     {
         if (_db is not null) return _db;
 
-        var path = Path.Combine(FileSystem.AppDataDirectory, "splitbill.db3");
+        var path = Path.Combine(FileSystem.AppDataDirectory, "splitbill_v2.db3");
         _db = new SQLiteAsyncConnection(
             path,
             SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache);
@@ -71,9 +71,7 @@ public class DatabaseService
         {
             var bills = await db.Table<Bill>().Where(b => b.CategoryId == c.Id).ToListAsync();
             c.BillCount = bills.Count;
-            decimal total = 0;
-            foreach (var b in bills) total += await TotalForBillAsync(db, b.Id);
-            c.Total = total;
+            c.Total = bills.Sum(b => b.Amount);
         }
         return cats;
     }
@@ -108,7 +106,7 @@ public class DatabaseService
         {
             b.PayerName = people.FirstOrDefault(p => p.Id == b.PayerId)?.Name ?? "?";
             b.CategoryName = cats.FirstOrDefault(c => c.Id == b.CategoryId)?.Name ?? "";
-            b.Total = await TotalForBillAsync(db, b.Id);
+            b.Total = b.Amount;
             var ids = (await db.Table<BillPerson>().Where(bp => bp.BillId == b.Id).ToListAsync())
                 .Select(bp => bp.PersonId).ToList();
             b.People = people.Where(p => ids.Contains(p.Id)).ToList();
@@ -128,16 +126,33 @@ public class DatabaseService
     }
 
     /// <summary>
-    /// Persists a freshly-created bill: the bill row, its participants, its menu
-    /// items and each item's exclusions. Returns the new bill id.
+    /// Persists a bill: the bill row, its participants, its items and each
+    /// item's exclusions. Inserts when <c>bill.Id == 0</c>, otherwise replaces
+    /// the existing bill's children in place. Returns the bill id.
     /// </summary>
-    public async Task<int> SaveNewBillAsync(
+    public async Task<int> SaveBillAsync(
         Bill bill,
         List<int> peopleIds,
         List<(string Name, decimal Price, List<int> ExcludedPeopleIds)> items)
     {
         var db = await GetConnectionAsync();
-        await db.InsertAsync(bill);
+        bill.ModifiedDate = DateTime.Now;
+
+        if (bill.Id == 0)
+        {
+            bill.CreatedDate = bill.ModifiedDate;   // a new bill is created "now"
+            await db.InsertAsync(bill);
+        }
+        else
+        {
+            await db.UpdateAsync(bill);
+            // Clear the old children before re-inserting the edited set.
+            var oldItems = await db.Table<BillItem>().Where(m => m.BillId == bill.Id).ToListAsync();
+            foreach (var it in oldItems)
+                await db.Table<MenuExclusion>().Where(x => x.MenuItemId == it.Id).DeleteAsync();
+            await db.Table<BillItem>().Where(m => m.BillId == bill.Id).DeleteAsync();
+            await db.Table<BillPerson>().Where(bp => bp.BillId == bill.Id).DeleteAsync();
+        }
 
         foreach (var pid in peopleIds)
             await db.InsertAsync(new BillPerson { BillId = bill.Id, PersonId = pid });
@@ -175,7 +190,7 @@ public class DatabaseService
             exMap[it.Id] = ex.Select(e => e.PersonId).ToHashSet();
         }
 
-        var shares = BillMath.Shares(ids, items, exMap);
+        var shares = BillMath.Shares(ids, bill.Amount, items, exMap);
         return new BillDetail
         {
             Bill = bill,
@@ -183,15 +198,8 @@ public class DatabaseService
             Items = items,
             ExclusionsByItem = exMap,
             Shares = shares,
-            Total = items.Sum(i => i.Price)
+            Total = bill.Amount
         };
-    }
-
-    // ---------- helpers ----------
-    private static async Task<decimal> TotalForBillAsync(SQLiteAsyncConnection db, int billId)
-    {
-        var items = await db.Table<BillItem>().Where(m => m.BillId == billId).ToListAsync();
-        return items.Sum(i => i.Price);
     }
 
     // ---------- Seed (first run only) ----------
@@ -215,9 +223,15 @@ public class DatabaseService
         await db.InsertAsync(office);
 
         async Task Seed(string name, int catId, string payer, string[] people,
-            (string n, decimal p, string[] excl)[] items, bool flat = false)
+            (string n, decimal p, string[] excl)[] items)
         {
-            var bill = new Bill { Name = name, CategoryId = catId, PayerId = F(payer), IsFlat = flat };
+            // Seed bills are fully itemized, so the total equals the item sum
+            // (the "base" split is zero) — the exclusions still demo correctly.
+            var bill = new Bill
+            {
+                Name = name, CategoryId = catId, PayerId = F(payer),
+                Amount = items.Sum(i => i.p),
+            };
             await db.InsertAsync(bill);
             foreach (var pn in people)
                 await db.InsertAsync(new BillPerson { BillId = bill.Id, PersonId = F(pn) });

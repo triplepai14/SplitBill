@@ -32,9 +32,11 @@ public partial class CategoryViewModel : BaseViewModel
     [ObservableProperty] private string catTitle = "";
     [ObservableProperty] private string catTotalLabel = "";
     [ObservableProperty] private string catCountLabel = "";
+    [ObservableProperty] private bool hasSettlements;
 
     public ObservableCollection<CatBillVM> Bills { get; } = new();
     public ObservableCollection<CatPersonVM> People { get; } = new();
+    public ObservableCollection<SettlementVM> Settlements { get; } = new();
 
     public CategoryViewModel(DatabaseService db) => _db = db;
 
@@ -53,7 +55,8 @@ public partial class CategoryViewModel : BaseViewModel
         CatCountLabel = $"{bills.Count} bill{(bills.Count == 1 ? "" : "s")}";
 
         Bills.Clear();
-        var agg = new Dictionary<int, decimal>();
+        var agg = new Dictionary<int, decimal>();    // what each person consumed
+        var paid = new Dictionary<int, decimal>();   // what each person fronted
         var names = new Dictionary<int, (string Name, int Color)>();
 
         foreach (var b in bills)
@@ -62,7 +65,7 @@ public partial class CategoryViewModel : BaseViewModel
             Bills.Add(new CatBillVM
             {
                 Name = b.Name,
-                PaidByLabel = $"Paid by {b.PayerName}",
+                PaidByLabel = $"Paid by 👑 {b.PayerName}",
                 TotalLabel = BillMath.Money(b.Total),
                 OpenCommand = new AsyncRelayCommand(() =>
                     Shell.Current.GoToAsync($"ResultPage?billId={billId}")),
@@ -70,12 +73,38 @@ public partial class CategoryViewModel : BaseViewModel
 
             var detail = await _db.GetBillDetailAsync(b.Id);
             if (detail is null) continue;
+            paid[detail.Bill.PayerId] =
+                paid.GetValueOrDefault(detail.Bill.PayerId, 0m) + detail.Total;
             foreach (var p in detail.People)
             {
                 agg[p.Id] = agg.GetValueOrDefault(p.Id, 0m) + detail.Shares.GetValueOrDefault(p.Id, 0m);
                 names[p.Id] = (p.Name, p.ColorIndex);
             }
         }
+
+        // Net balance per person across the whole category, then reduce it to
+        // the shortest list of who-pays-whom transfers.
+        var net = names.Keys.ToDictionary(
+            id => id,
+            id => paid.GetValueOrDefault(id, 0m) - agg.GetValueOrDefault(id, 0m));
+
+        Settlements.Clear();
+        foreach (var (fromId, toId, amount) in BillMath.Settle(net))
+        {
+            var from = names[fromId];
+            var to = names[toId];
+            Settlements.Add(new SettlementVM
+            {
+                FromName = from.Name,
+                FromInitial = BillMath.Initial(from.Name),
+                FromColor = Color.FromArgb(BillMath.ColorForIndex(from.Color)),
+                ToName = to.Name,
+                ToInitial = BillMath.Initial(to.Name),
+                ToColor = Color.FromArgb(BillMath.ColorForIndex(to.Color)),
+                AmountLabel = BillMath.Money(amount),
+            });
+        }
+        HasSettlements = Settlements.Count > 0;
 
         People.Clear();
         foreach (var kv in agg.OrderByDescending(k => k.Value))

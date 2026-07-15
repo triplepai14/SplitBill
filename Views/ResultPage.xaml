@@ -9,11 +9,17 @@
     <Grid RowDefinitions="Auto,*,Auto">
 
         <!-- Header -->
-        <HorizontalStackLayout Grid.Row="0" Spacing="10" Padding="16,10,16,12" VerticalOptions="Center">
-            <Button Text="‹" Style="{StaticResource IconButton}" Command="{Binding DoneCommand}" />
-            <Label Text="{Binding ResultTitle}" Style="{StaticResource H2}" VerticalOptions="Center"
-                   LineBreakMode="TailTruncation" />
-        </HorizontalStackLayout>
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10"
+              Padding="16,10,16,12" VerticalOptions="Center">
+            <Button Grid.Column="0" Text="‹" Style="{StaticResource IconButton}"
+                    Command="{Binding BackCommand}" />
+            <Label Grid.Column="1" Text="{Binding ResultTitle}" Style="{StaticResource H2}"
+                   VerticalOptions="Center" LineBreakMode="TailTruncation" />
+            <Button Grid.Column="2" Text="Edit" Command="{Binding EditCommand}"
+                    BackgroundColor="{StaticResource Surface}" TextColor="{StaticResource Accent}"
+                    FontFamily="PJSansBold" FontSize="14" CornerRadius="12" BorderWidth="0"
+                    HeightRequest="40" Padding="16,0" />
+        </Grid>
 
         <ScrollView Grid.Row="1" Padding="20,6,20,24">
             <VerticalStackLayout Spacing="0">
@@ -33,8 +39,33 @@
                             <Label Text="{Binding PerHeadLabel}" TextColor="White" Opacity="0.9"
                                    FontFamily="PJSansSemibold" FontSize="13" />
                         </HorizontalStackLayout>
+                        <Label Text="{Binding ModifiedLabel}" TextColor="White" Opacity="0.65"
+                               FontFamily="PJSansMedium" FontSize="11" HorizontalOptions="Center"
+                               Margin="0,7,0,0" />
                     </VerticalStackLayout>
                 </Border>
+
+                <!-- What's on the bill (read-only breakdown) -->
+                <VerticalStackLayout IsVisible="{Binding HasLines}" Spacing="0">
+                    <Label Text="ON THE BILL" Style="{StaticResource SectionLabel}" Margin="4,24,4,11" />
+                    <VerticalStackLayout Spacing="9" BindableLayout.ItemsSource="{Binding Lines}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:BillLineVM">
+                                <Border BackgroundColor="{StaticResource Surface}" Stroke="{StaticResource LineColor}"
+                                        StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="14,12">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
+                                            <Label Text="{Binding Name}" FontFamily="PJSansBold" FontSize="14" />
+                                            <Label Text="{Binding Sub}" Style="{StaticResource Muted}" FontSize="12" />
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="1" Text="{Binding PriceLabel}" FontFamily="PJSansExtra"
+                                               FontSize="15" VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
 
                 <Label Text="EACH PERSON'S SHARE" Style="{StaticResource SectionLabel}" Margin="4,24,4,11" />
                 <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Rows}">
@@ -104,6 +135,13 @@
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
+
+                <!-- Danger zone -->
+                <Button Text="🗑  Delete bill" Command="{Binding DeleteCommand}"
+                        BackgroundColor="Transparent" TextColor="#C63A3A"
+                        BorderColor="#EAC7C7" BorderWidth="1"
+                        FontFamily="PJSansBold" FontSize="14"
+                        CornerRadius="14" HeightRequest="46" Margin="0,26,0,0" />
 
             </VerticalStackLayout>
         </ScrollView>

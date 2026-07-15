@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SplitBillApp.Views.SplashPage"
+             Shell.NavBarIsVisible="False">
+
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#2AA06C" Offset="0.0" />
+            <GradientStop Color="#1F8A5B" Offset="0.55" />
+            <GradientStop Color="#16714A" Offset="1.0" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
+
+    <Grid>
+        <!-- Everything fades/slides in from code-behind -->
+        <VerticalStackLayout x:Name="Root" Spacing="0" Opacity="0" TranslationY="24"
+                             HorizontalOptions="Center" VerticalOptions="Center">
+
+            <!-- Logo: receipt card + plus badge -->
+            <Grid HorizontalOptions="Center" WidthRequest="150" HeightRequest="180">
+                <Border BackgroundColor="White" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 28"
+                        WidthRequest="124" HeightRequest="152"
+                        HorizontalOptions="Start" VerticalOptions="Start"
+                        Margin="0,4,0,0">
+                    <VerticalStackLayout Padding="16,20" Spacing="10">
+                        <BoxView Color="{StaticResource TextColor}" WidthRequest="64" HeightRequest="12"
+                                 CornerRadius="6" HorizontalOptions="Start" />
+                        <BoxView Color="{StaticResource AccentSoft}" WidthRequest="92" HeightRequest="18"
+                                 CornerRadius="8" HorizontalOptions="Start" Margin="0,6,0,0" />
+                        <BoxView Color="{StaticResource AccentSoft}" WidthRequest="92" HeightRequest="18"
+                                 CornerRadius="8" HorizontalOptions="Start" />
+                        <BoxView Color="{StaticResource AccentSoft}" WidthRequest="60" HeightRequest="18"
+                                 CornerRadius="8" HorizontalOptions="Start" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border BackgroundColor="{StaticResource Accent}" Stroke="White" StrokeThickness="5"
+                        StrokeShape="RoundRectangle 40" WidthRequest="64" HeightRequest="64"
+                        HorizontalOptions="End" VerticalOptions="End">
+                    <Label Text="+" TextColor="White" FontFamily="PJSansBold" FontSize="34"
+                           Margin="0,-4,0,0" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </Grid>
+
+            <!-- Wordmark -->
+            <Label Text="Split Bill App" TextColor="White" FontFamily="PJSansExtra" FontSize="36"
+                   HorizontalOptions="Center" Margin="0,26,0,0" />
+            <Label Text="Keep everyone square." TextColor="White" Opacity="0.85"
+                   FontFamily="PJSansSemibold" FontSize="15" HorizontalOptions="Center"
+                   Margin="0,6,0,0" />
+
+        </VerticalStackLayout>
+
+        <!-- Footer -->
+        <Label Text="฿ · fair splits, no math fights" TextColor="White" Opacity="0.55"
+               FontFamily="PJSansMedium" FontSize="12" HorizontalOptions="Center"
+               VerticalOptions="End" Margin="0,0,0,36" />
+    </Grid>
+</ContentPage>

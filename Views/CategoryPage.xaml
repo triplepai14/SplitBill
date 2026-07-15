@@ -31,8 +31,7 @@
                 <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Bills}">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="vm:CatBillVM">
-                            <Border BackgroundColor="{StaticResource Surface}" Stroke="{StaticResource LineColor}"
-                                    StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="16,14">
+                            <Border Style="{StaticResource RowHover}" Padding="16,14">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding OpenCommand}" />
                                 </Border.GestureRecognizers>
@@ -70,6 +69,46 @@
                             </Border>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <!-- Who pays whom, across every bill in this category -->
+                <VerticalStackLayout IsVisible="{Binding HasSettlements}" Spacing="0">
+                    <Label Text="SETTLE UP · WHOLE CATEGORY" Style="{StaticResource SectionLabel}"
+                           Margin="4,22,4,11" />
+                    <VerticalStackLayout Spacing="9" BindableLayout.ItemsSource="{Binding Settlements}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:SettlementVM">
+                                <Border BackgroundColor="{StaticResource Surface}" Stroke="{StaticResource LineColor}"
+                                        StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="14,12">
+                                    <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" ColumnSpacing="9">
+                                        <Border Grid.Column="0" WidthRequest="28" HeightRequest="28"
+                                                BackgroundColor="{Binding FromColor}" StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 40" VerticalOptions="Center">
+                                            <Label Text="{Binding FromInitial}" TextColor="White"
+                                                   FontFamily="PJSansBold" FontSize="12"
+                                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+                                        <Label Grid.Column="1" Text="{Binding FromName}" FontFamily="PJSansBold"
+                                               FontSize="14" VerticalOptions="Center" />
+                                        <Label Grid.Column="2" Text="→" TextColor="{StaticResource SubText}"
+                                               FontSize="16" VerticalOptions="Center" />
+                                        <Border Grid.Column="3" WidthRequest="28" HeightRequest="28"
+                                                BackgroundColor="{Binding ToColor}" StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 40" VerticalOptions="Center">
+                                            <Label Text="{Binding ToInitial}" TextColor="White"
+                                                   FontFamily="PJSansBold" FontSize="12"
+                                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+                                        <Label Grid.Column="4" Text="{Binding ToName}" FontFamily="PJSansBold"
+                                               FontSize="14" VerticalOptions="Center" />
+                                        <Label Grid.Column="5" Text="{Binding AmountLabel}"
+                                               TextColor="{StaticResource Accent}" FontFamily="PJSansExtra"
+                                               FontSize="15" VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
 
             </VerticalStackLayout>

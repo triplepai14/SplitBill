@@ -2,7 +2,9 @@ using SQLite;
 
 namespace SplitBillApp.Models;
 
-// A single bill to split. Either a flat total or an itemized list of menu items.
+// A single bill to split: an authoritative total amount, plus optional items
+// that some people didn't share (carved out of the total; the rest splits
+// equally). See BillMath.Shares.
 [Table("bills")]
 public class Bill
 {
@@ -17,11 +19,13 @@ public class Bill
     // The person who fronted the money for the whole bill.
     public int PayerId { get; set; }
 
-    // true  => a single "Total" item split equally among included people
-    // false => an itemized bill, each item split among its included people
-    public bool IsFlat { get; set; }
+    // The total bill amount, entered by the user (not an auto-sum of items).
+    public decimal Amount { get; set; }
 
     public DateTime CreatedDate { get; set; } = DateTime.Now;
+
+    // Bumped on every save; equals CreatedDate for a bill never edited.
+    public DateTime ModifiedDate { get; set; } = DateTime.Now;
 
     // Display-only, filled in when listing.
     [Ignore] public string PayerName { get; set; } = string.Empty;

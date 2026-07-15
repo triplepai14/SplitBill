@@ -18,6 +18,7 @@ public class BillCardVM
     public string CountLabel { get; set; } = "";
     public List<AvatarVM> Avatars { get; set; } = new();
     public ICommand? OpenCommand { get; set; }
+    public ICommand? DeleteCommand { get; set; }
 }
 
 public class CategoryCardVM
@@ -86,13 +87,14 @@ public partial class HomeViewModel : BaseViewModel
                 {
                     BillId = b.Id,
                     Name = b.Name,
-                    PaidByLabel = $"Paid by {b.PayerName}",
+                    PaidByLabel = $"Paid by 👑 {b.PayerName}",
                     TotalLabel = BillMath.Money(b.Total),
                     HasCategory = !string.IsNullOrEmpty(b.CategoryName),
                     CategoryName = b.CategoryName,
                     CountLabel = $"{b.People.Count} people",
                     Avatars = avatars,
                     OpenCommand = new AsyncRelayCommand(() => OpenBillAsync(b.Id)),
+                    DeleteCommand = new AsyncRelayCommand(() => DeleteBillAsync(b.Id, b.Name)),
                 });
             }
 
@@ -121,6 +123,16 @@ public partial class HomeViewModel : BaseViewModel
 
     private static Task OpenBillAsync(int billId)
         => Shell.Current.GoToAsync($"ResultPage?billId={billId}");
+
+    private async Task DeleteBillAsync(int billId, string name)
+    {
+        var confirmed = await Shell.Current.DisplayAlertAsync("Delete bill?",
+            $"\"{name}\" will be removed permanently.", "Delete", "Cancel");
+        if (!confirmed) return;
+
+        await _db.DeleteBillAsync(billId);
+        await LoadAsync();
+    }
 
     private static Task OpenCategoryAsync(int categoryId)
         => Shell.Current.GoToAsync($"CategoryPage?categoryId={categoryId}");

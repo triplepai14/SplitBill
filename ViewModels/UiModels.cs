@@ -54,6 +54,9 @@ public partial class ToggleChip : ObservableObject
     public Color AvatarColor { get; set; } = Colors.Gray;
     public ChipVariant Variant { get; set; } = ChipVariant.Person;
 
+    // Marks the person who paid the bill — shown with a crown in the chip.
+    [ObservableProperty] private bool isPayer;
+
     [ObservableProperty] private bool active;
 
     public ICommand? ToggleCommand { get; set; }
