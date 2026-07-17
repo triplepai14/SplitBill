@@ -23,11 +23,19 @@
                     <Entry Text="{Binding BillName}" Placeholder="e.g. Friday dinner" FontSize="16" />
                 </Border>
 
-                <Label Text="Category · optional" Style="{StaticResource SectionLabel}" Margin="4,22,4,9" />
+                <HorizontalStackLayout Spacing="8" Margin="4,22,4,9">
+                    <Label Text="Category · optional" Style="{StaticResource SectionLabel}"
+                           VerticalOptions="Center" />
+                    <Button Text="{Binding AddCategoryIcon}" Command="{Binding ToggleAddCategoryCommand}"
+                            BackgroundColor="{StaticResource Surface2}" TextColor="{StaticResource Accent}"
+                            FontFamily="PJSansBold" FontSize="14" WidthRequest="26" HeightRequest="26"
+                            CornerRadius="8" Padding="0" BorderWidth="0" VerticalOptions="Center" />
+                </HorizontalStackLayout>
                 <FlexLayout Wrap="Wrap" Direction="Row"
                             BindableLayout.ItemsSource="{Binding CategoryChips}"
                             BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0"
+                      IsVisible="{Binding ShowAddCategory}">
                     <Border Grid.Column="0" Style="{StaticResource Field}" StrokeShape="RoundRectangle 12">
                         <Entry Text="{Binding NewCategoryName}" Placeholder="New category…" FontSize="14" />
                     </Border>
@@ -37,11 +45,19 @@
                             HeightRequest="44" Padding="16,0" />
                 </Grid>
 
-                <Label Text="Who's splitting?" Style="{StaticResource SectionLabel}" Margin="4,24,4,9" />
+                <HorizontalStackLayout Spacing="8" Margin="4,24,4,9">
+                    <Label Text="Who's splitting?" Style="{StaticResource SectionLabel}"
+                           VerticalOptions="Center" />
+                    <Button Text="{Binding AddPersonIcon}" Command="{Binding ToggleAddPersonCommand}"
+                            BackgroundColor="{StaticResource Surface2}" TextColor="{StaticResource Accent}"
+                            FontFamily="PJSansBold" FontSize="14" WidthRequest="26" HeightRequest="26"
+                            CornerRadius="8" Padding="0" BorderWidth="0" VerticalOptions="Center" />
+                </HorizontalStackLayout>
                 <FlexLayout Wrap="Wrap" Direction="Row"
                             BindableLayout.ItemsSource="{Binding PeopleChips}"
                             BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0"
+                      IsVisible="{Binding ShowAddPerson}">
                     <Border Grid.Column="0" Style="{StaticResource Field}" StrokeShape="RoundRectangle 12">
                         <Entry Text="{Binding NewPersonName}" Placeholder="Add someone new…" FontSize="14" />
                     </Border>
@@ -160,7 +176,7 @@
 
         <!-- Footer -->
         <Grid Grid.Row="2" Padding="20,14,20,28">
-            <Button Text="See who owes what" Command="{Binding FinishCommand}"
+            <Button Text="{Binding FinishLabel}" Command="{Binding FinishCommand}"
                     Style="{StaticResource PrimaryButton}" />
         </Grid>
     </Grid>

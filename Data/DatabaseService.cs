@@ -19,6 +19,20 @@ public class BillDetail
 }
 
 /// <summary>
+/// Aggregated view of one category: its bills, the distinct people involved,
+/// how much each consumed, and the minimal who-pays-whom transfers.
+/// </summary>
+public class CategoryStats
+{
+    public Category Category { get; set; } = new();
+    public List<Bill> Bills { get; set; } = new();
+    public List<Person> People { get; set; } = new();
+    public Dictionary<int, decimal> Spent { get; set; } = new();
+    public List<(Person From, Person To, decimal Amount)> Settlements { get; set; } = new();
+    public decimal Total { get; set; }
+}
+
+/// <summary>
 /// Offline-first data layer. Everything lives in a local SQLite file inside the
 /// app's private data directory — no network is ever required.
 /// </summary>
@@ -67,11 +81,20 @@ public class DatabaseService
     {
         var db = await GetConnectionAsync();
         var cats = await db.Table<Category>().OrderBy(c => c.Id).ToListAsync();
+        var allPeople = await GetPeopleAsync();
         foreach (var c in cats)
         {
             var bills = await db.Table<Bill>().Where(b => b.CategoryId == c.Id).ToListAsync();
             c.BillCount = bills.Count;
             c.Total = bills.Sum(b => b.Amount);
+
+            var ids = new HashSet<int>();
+            foreach (var b in bills)
+            {
+                var bp = await db.Table<BillPerson>().Where(x => x.BillId == b.Id).ToListAsync();
+                foreach (var x in bp) ids.Add(x.PersonId);
+            }
+            c.People = allPeople.Where(p => ids.Contains(p.Id)).ToList();
         }
         return cats;
     }
@@ -88,6 +111,67 @@ public class DatabaseService
         var cat = new Category { Name = name.Trim() };
         await db.InsertAsync(cat);
         return cat;
+    }
+
+    /// <summary>
+    /// Everything the category summary needs in one call: enriched bills,
+    /// distinct people, per-person spend, and net who-pays-whom transfers.
+    /// </summary>
+    public async Task<CategoryStats?> GetCategoryStatsAsync(int categoryId)
+    {
+        var cat = await GetCategoryAsync(categoryId);
+        if (cat is null) return null;
+
+        var bills = await GetBillsAsync(categoryId);
+        var allPeople = await GetPeopleAsync();
+
+        var spent = new Dictionary<int, decimal>();
+        var paid = new Dictionary<int, decimal>();
+        var ids = new HashSet<int>();
+
+        foreach (var b in bills)
+        {
+            var detail = await GetBillDetailAsync(b.Id);
+            if (detail is null) continue;
+            paid[detail.Bill.PayerId] = paid.GetValueOrDefault(detail.Bill.PayerId, 0m) + detail.Total;
+            foreach (var p in detail.People)
+            {
+                spent[p.Id] = spent.GetValueOrDefault(p.Id, 0m) + detail.Shares.GetValueOrDefault(p.Id, 0m);
+                ids.Add(p.Id);
+            }
+        }
+
+        var people = allPeople.Where(p => ids.Contains(p.Id)).ToList();
+        var net = ids.ToDictionary(
+            id => id,
+            id => paid.GetValueOrDefault(id, 0m) - spent.GetValueOrDefault(id, 0m));
+
+        var settlements = BillMath.Settle(net)
+            .Select(t => (
+                From: people.First(p => p.Id == t.FromId),
+                To: people.First(p => p.Id == t.ToId),
+                t.Amount))
+            .ToList();
+
+        return new CategoryStats
+        {
+            Category = cat,
+            Bills = bills,
+            People = people,
+            Spent = spent,
+            Settlements = settlements,
+            Total = bills.Sum(b => b.Amount),
+        };
+    }
+
+    /// <summary>Deletes a category AND every bill inside it (cascade).</summary>
+    public async Task DeleteCategoryAsync(int categoryId)
+    {
+        var db = await GetConnectionAsync();
+        var bills = await db.Table<Bill>().Where(b => b.CategoryId == categoryId).ToListAsync();
+        foreach (var b in bills)
+            await DeleteBillAsync(b.Id);
+        await db.DeleteAsync<Category>(categoryId);
     }
 
     // ---------- Bills ----------

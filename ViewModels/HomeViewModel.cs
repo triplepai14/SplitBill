@@ -18,6 +18,7 @@ public class BillCardVM
     public string CountLabel { get; set; } = "";
     public List<AvatarVM> Avatars { get; set; } = new();
     public ICommand? OpenCommand { get; set; }
+    public ICommand? ShareCommand { get; set; }
     public ICommand? DeleteCommand { get; set; }
 }
 
@@ -27,7 +28,11 @@ public class CategoryCardVM
     public string Name { get; set; } = "";
     public string CountLabel { get; set; } = "";
     public string TotalLabel { get; set; } = "";
+    public string PeopleLabel { get; set; } = "";
+    public List<AvatarVM> Avatars { get; set; } = new();
     public ICommand? OpenCommand { get; set; }
+    public ICommand? ShareCommand { get; set; }
+    public ICommand? DeleteCommand { get; set; }
 }
 
 public partial class HomeViewModel : BaseViewModel
@@ -94,6 +99,7 @@ public partial class HomeViewModel : BaseViewModel
                     CountLabel = $"{b.People.Count} people",
                     Avatars = avatars,
                     OpenCommand = new AsyncRelayCommand(() => OpenBillAsync(b.Id)),
+                    ShareCommand = new AsyncRelayCommand(() => ShareBillAsync(b.Id)),
                     DeleteCommand = new AsyncRelayCommand(() => DeleteBillAsync(b.Id, b.Name)),
                 });
             }
@@ -101,13 +107,21 @@ public partial class HomeViewModel : BaseViewModel
             CategoryCards.Clear();
             foreach (var c in await _db.GetCategoriesAsync())
             {
+                var catAvatars = c.People.Take(4).Select((p, i) =>
+                    AvatarVM.For(p.Name, p.ColorIndex, size: 30,
+                        marginLeft: i == 0 ? 0 : -8, borderWidth: 2)).ToList();
+
                 CategoryCards.Add(new CategoryCardVM
                 {
                     CategoryId = c.Id,
                     Name = c.Name,
                     CountLabel = $"{c.BillCount} bill{(c.BillCount == 1 ? "" : "s")}",
                     TotalLabel = BillMath.Money(c.Total),
+                    PeopleLabel = $"{c.People.Count} people",
+                    Avatars = catAvatars,
                     OpenCommand = new AsyncRelayCommand(() => OpenCategoryAsync(c.Id)),
+                    ShareCommand = new AsyncRelayCommand(() => ShareCategoryAsync(c.Id)),
+                    DeleteCommand = new AsyncRelayCommand(() => DeleteCategoryAsync(c.Id, c.Name, c.BillCount)),
                 });
             }
         }
@@ -131,6 +145,39 @@ public partial class HomeViewModel : BaseViewModel
         if (!confirmed) return;
 
         await _db.DeleteBillAsync(billId);
+        await LoadAsync();
+    }
+
+    private async Task ShareBillAsync(int billId)
+    {
+        var detail = await _db.GetBillDetailAsync(billId);
+        if (detail is null) return;
+        await Share.Default.RequestAsync(new ShareTextRequest
+        {
+            Title = detail.Bill.Name,
+            Text = SummaryText.ForBill(detail),
+        });
+    }
+
+    private async Task ShareCategoryAsync(int categoryId)
+    {
+        var stats = await _db.GetCategoryStatsAsync(categoryId);
+        if (stats is null) return;
+        await Share.Default.RequestAsync(new ShareTextRequest
+        {
+            Title = stats.Category.Name,
+            Text = SummaryText.ForCategory(stats),
+        });
+    }
+
+    private async Task DeleteCategoryAsync(int categoryId, string name, int billCount)
+    {
+        var confirmed = await Shell.Current.DisplayAlertAsync("Delete category?",
+            $"\"{name}\" and all {billCount} bill{(billCount == 1 ? "" : "s")} in it will be removed permanently.",
+            "Delete", "Cancel");
+        if (!confirmed) return;
+
+        await _db.DeleteCategoryAsync(categoryId);
         await LoadAsync();
     }
 

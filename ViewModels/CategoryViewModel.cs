@@ -27,6 +27,7 @@ public class CatPersonVM
 public partial class CategoryViewModel : BaseViewModel
 {
     private readonly DatabaseService _db;
+    private CategoryStats? _stats;
 
     [ObservableProperty] private int categoryId;
     [ObservableProperty] private string catTitle = "";
@@ -46,20 +47,16 @@ public partial class CategoryViewModel : BaseViewModel
     {
         if (CategoryId == 0) return;
 
-        var cat = await _db.GetCategoryAsync(CategoryId);
-        var bills = await _db.GetBillsAsync(CategoryId);
-        var total = bills.Sum(b => b.Total);
+        var s = await _db.GetCategoryStatsAsync(CategoryId);
+        if (s is null) return;
+        _stats = s;
 
-        CatTitle = cat?.Name ?? "Category";
-        CatTotalLabel = BillMath.Money(total);
-        CatCountLabel = $"{bills.Count} bill{(bills.Count == 1 ? "" : "s")}";
+        CatTitle = s.Category.Name;
+        CatTotalLabel = BillMath.Money(s.Total);
+        CatCountLabel = $"{s.Bills.Count} bill{(s.Bills.Count == 1 ? "" : "s")} · {s.People.Count} people";
 
         Bills.Clear();
-        var agg = new Dictionary<int, decimal>();    // what each person consumed
-        var paid = new Dictionary<int, decimal>();   // what each person fronted
-        var names = new Dictionary<int, (string Name, int Color)>();
-
-        foreach (var b in bills)
+        foreach (var b in s.Bills)
         {
             var billId = b.Id;
             Bills.Add(new CatBillVM
@@ -70,56 +67,61 @@ public partial class CategoryViewModel : BaseViewModel
                 OpenCommand = new AsyncRelayCommand(() =>
                     Shell.Current.GoToAsync($"ResultPage?billId={billId}")),
             });
-
-            var detail = await _db.GetBillDetailAsync(b.Id);
-            if (detail is null) continue;
-            paid[detail.Bill.PayerId] =
-                paid.GetValueOrDefault(detail.Bill.PayerId, 0m) + detail.Total;
-            foreach (var p in detail.People)
-            {
-                agg[p.Id] = agg.GetValueOrDefault(p.Id, 0m) + detail.Shares.GetValueOrDefault(p.Id, 0m);
-                names[p.Id] = (p.Name, p.ColorIndex);
-            }
         }
 
-        // Net balance per person across the whole category, then reduce it to
-        // the shortest list of who-pays-whom transfers.
-        var net = names.Keys.ToDictionary(
-            id => id,
-            id => paid.GetValueOrDefault(id, 0m) - agg.GetValueOrDefault(id, 0m));
+        People.Clear();
+        foreach (var p in s.People.OrderByDescending(p => s.Spent.GetValueOrDefault(p.Id, 0m)))
+        {
+            People.Add(new CatPersonVM
+            {
+                Name = p.Name,
+                Initial = BillMath.Initial(p.Name),
+                AvatarColor = Color.FromArgb(BillMath.ColorForIndex(p.ColorIndex)),
+                AmountLabel = BillMath.Money(s.Spent.GetValueOrDefault(p.Id, 0m)),
+            });
+        }
 
         Settlements.Clear();
-        foreach (var (fromId, toId, amount) in BillMath.Settle(net))
+        foreach (var (from, to, amount) in s.Settlements)
         {
-            var from = names[fromId];
-            var to = names[toId];
             Settlements.Add(new SettlementVM
             {
                 FromName = from.Name,
                 FromInitial = BillMath.Initial(from.Name),
-                FromColor = Color.FromArgb(BillMath.ColorForIndex(from.Color)),
+                FromColor = Color.FromArgb(BillMath.ColorForIndex(from.ColorIndex)),
                 ToName = to.Name,
                 ToInitial = BillMath.Initial(to.Name),
-                ToColor = Color.FromArgb(BillMath.ColorForIndex(to.Color)),
+                ToColor = Color.FromArgb(BillMath.ColorForIndex(to.ColorIndex)),
                 AmountLabel = BillMath.Money(amount),
             });
         }
         HasSettlements = Settlements.Count > 0;
-
-        People.Clear();
-        foreach (var kv in agg.OrderByDescending(k => k.Value))
-        {
-            var (name, color) = names[kv.Key];
-            People.Add(new CatPersonVM
-            {
-                Name = name,
-                Initial = BillMath.Initial(name),
-                AvatarColor = Color.FromArgb(BillMath.ColorForIndex(color)),
-                AmountLabel = BillMath.Money(kv.Value),
-            });
-        }
     }
 
     [RelayCommand]
     private async Task BackAsync() => await Shell.Current.GoToAsync("//HomePage");
+
+    [RelayCommand]
+    private async Task ShareAsync()
+    {
+        if (_stats is null) return;
+        await Share.Default.RequestAsync(new ShareTextRequest
+        {
+            Title = CatTitle,
+            Text = SummaryText.ForCategory(_stats),
+        });
+    }
+
+    // Permanently remove this category and every bill inside it.
+    [RelayCommand]
+    private async Task DeleteAsync()
+    {
+        var confirmed = await Shell.Current.DisplayAlertAsync("Delete category?",
+            $"\"{CatTitle}\" and all {Bills.Count} bill{(Bills.Count == 1 ? "" : "s")} in it will be removed permanently.",
+            "Delete", "Cancel");
+        if (!confirmed) return;
+
+        await _db.DeleteCategoryAsync(CategoryId);
+        await Shell.Current.GoToAsync("//HomePage");
+    }
 }

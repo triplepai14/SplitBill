@@ -203,6 +203,20 @@ public partial class ResultViewModel : BaseViewModel
         await Shell.Current.GoToAsync("CreateBillPage");
     }
 
+    // Share the bill as a short text summary (total, who paid, who pays whom
+    // back) — pick LINE or any chat app from the share sheet to send it.
+    [RelayCommand]
+    private async Task ShareAsync()
+    {
+        var detail = await _db.GetBillDetailAsync(BillId);
+        if (detail is null) return;
+        await Share.Default.RequestAsync(new ShareTextRequest
+        {
+            Title = ResultTitle,
+            Text = SummaryText.ForBill(detail),
+        });
+    }
+
     // Permanently remove this bill (after confirmation) and return home.
     [RelayCommand]
     private async Task DeleteAsync()

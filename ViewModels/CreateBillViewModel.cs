@@ -82,6 +82,23 @@ public partial class CreateBillViewModel : BaseViewModel
     // "New bill" when creating, "Edit bill" when reopening an existing one.
     [ObservableProperty] private string pageTitle = "New bill";
 
+    // Footer button: creating shows the result next, editing just saves.
+    [ObservableProperty] private string finishLabel = "See who owes what";
+
+    // The add-new-category / add-new-person inputs stay hidden until the
+    // little + button next to the section header is tapped.
+    [ObservableProperty] private bool showAddCategory;
+    [ObservableProperty] private bool showAddPerson;
+
+    public string AddCategoryIcon => ShowAddCategory ? "✕" : "+";
+    public string AddPersonIcon => ShowAddPerson ? "✕" : "+";
+
+    partial void OnShowAddCategoryChanged(bool value) => OnPropertyChanged(nameof(AddCategoryIcon));
+    partial void OnShowAddPersonChanged(bool value) => OnPropertyChanged(nameof(AddPersonIcon));
+
+    [RelayCommand] private void ToggleAddCategory() => ShowAddCategory = !ShowAddCategory;
+    [RelayCommand] private void ToggleAddPerson() => ShowAddPerson = !ShowAddPerson;
+
     // ---- total + items ----
     [ObservableProperty] private string totalText = string.Empty;
     [ObservableProperty] private string itemName = string.Empty;
@@ -126,8 +143,11 @@ public partial class CreateBillViewModel : BaseViewModel
     public async Task LoadAsync()
     {
         PageTitle = Draft.BillId == 0 ? "New bill" : "Edit bill";
+        FinishLabel = Draft.BillId == 0 ? "See who owes what" : "Save changes";
         BillName = Draft.Name;
         TotalText = Draft.TotalText;
+        ShowAddCategory = false;
+        ShowAddPerson = false;
 
         _allPeople = await _db.GetPeopleAsync();
         await BuildCategoryChipsAsync();
@@ -187,6 +207,7 @@ public partial class CreateBillViewModel : BaseViewModel
         var chip = MakeCatChip(cat.Id, cat.Name);
         CategoryChips.Add(chip);
         SelectCategory(chip);
+        ShowAddCategory = false;   // done — tuck the input away again
     }
 
     // ---------- people ----------

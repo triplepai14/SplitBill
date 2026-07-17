@@ -64,7 +64,7 @@
                                                FontSize="11" HorizontalOptions="End" />
                                     </VerticalStackLayout>
                                 </Grid>
-                                <Grid ColumnDefinitions="Auto,*,Auto" Padding="8,0,0,0">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto" Padding="8,0,0,0">
                                     <HorizontalStackLayout Grid.Column="0" Spacing="0"
                                                            BindableLayout.ItemsSource="{Binding Avatars}">
                                         <BindableLayout.ItemTemplate>
@@ -84,7 +84,13 @@
                                     </HorizontalStackLayout>
                                     <Label Grid.Column="1" Text="{Binding CountLabel}" Style="{StaticResource Muted}"
                                            Margin="12,0,0,0" VerticalOptions="Center" />
-                                    <Button Grid.Column="2" Text="🗑" Command="{Binding DeleteCommand}"
+                                    <Button Grid.Column="2" Text="📤" Command="{Binding ShareCommand}"
+                                            BackgroundColor="{StaticResource Surface2}"
+                                            TextColor="{StaticResource Accent}"
+                                            FontSize="14" WidthRequest="34" HeightRequest="34"
+                                            CornerRadius="10" Padding="0" BorderWidth="0"
+                                            Margin="0,0,6,0" VerticalOptions="Center" />
+                                    <Button Grid.Column="3" Text="🗑" Command="{Binding DeleteCommand}"
                                             BackgroundColor="{StaticResource Surface2}" TextColor="#C63A3A"
                                             FontSize="14" WidthRequest="34" HeightRequest="34"
                                             CornerRadius="10" Padding="0" BorderWidth="0"
@@ -106,22 +112,56 @@
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="vm:CategoryCardVM">
-                        <Border Style="{StaticResource CardHover}" Padding="16,18">
+                        <Border Style="{StaticResource CardHover}" Padding="16">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding OpenCommand}" />
                             </Border.GestureRecognizers>
-                            <Grid ColumnDefinitions="*,Auto">
-                                <VerticalStackLayout Grid.Column="0" Spacing="3" VerticalOptions="Center">
-                                    <Label Text="{Binding Name}" FontFamily="PJSansBold" FontSize="17" />
-                                    <Label Text="{Binding CountLabel}" Style="{StaticResource Muted}" />
-                                </VerticalStackLayout>
-                                <VerticalStackLayout Grid.Column="1" HorizontalOptions="End" Spacing="2">
-                                    <Label Text="{Binding TotalLabel}" FontFamily="PJSansExtra"
-                                           FontSize="19" HorizontalOptions="End" />
-                                    <Label Text="View ›" TextColor="{StaticResource Accent}"
-                                           FontFamily="PJSansBold" FontSize="12" HorizontalOptions="End" />
-                                </VerticalStackLayout>
-                            </Grid>
+                            <VerticalStackLayout Spacing="13">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                        <Label Text="{Binding Name}" FontFamily="PJSansBold" FontSize="17" />
+                                        <Label Text="{Binding CountLabel}" Style="{StaticResource Muted}" />
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="End" Spacing="2">
+                                        <Label Text="{Binding TotalLabel}" FontFamily="PJSansExtra"
+                                               FontSize="19" HorizontalOptions="End" />
+                                        <Label Text="View ›" TextColor="{StaticResource Accent}"
+                                               FontFamily="PJSansBold" FontSize="12" HorizontalOptions="End" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto" Padding="8,0,0,0">
+                                    <HorizontalStackLayout Grid.Column="0" Spacing="0"
+                                                           BindableLayout.ItemsSource="{Binding Avatars}">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:AvatarVM">
+                                                <Border WidthRequest="{Binding Size}" HeightRequest="{Binding Size}"
+                                                        Margin="{Binding Margin}"
+                                                        BackgroundColor="{Binding Background}"
+                                                        Stroke="{Binding BorderColor}"
+                                                        StrokeThickness="{Binding BorderWidth}"
+                                                        StrokeShape="RoundRectangle 40">
+                                                    <Label Text="{Binding Initial}" TextColor="White"
+                                                           FontFamily="PJSansBold" FontSize="{Binding FontSize}"
+                                                           HorizontalOptions="Center" VerticalOptions="Center" />
+                                                </Border>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </HorizontalStackLayout>
+                                    <Label Grid.Column="1" Text="{Binding PeopleLabel}" Style="{StaticResource Muted}"
+                                           Margin="12,0,0,0" VerticalOptions="Center" />
+                                    <Button Grid.Column="2" Text="📤" Command="{Binding ShareCommand}"
+                                            BackgroundColor="{StaticResource Surface2}"
+                                            TextColor="{StaticResource Accent}"
+                                            FontSize="14" WidthRequest="34" HeightRequest="34"
+                                            CornerRadius="10" Padding="0" BorderWidth="0"
+                                            Margin="0,0,6,0" VerticalOptions="Center" />
+                                    <Button Grid.Column="3" Text="🗑" Command="{Binding DeleteCommand}"
+                                            BackgroundColor="{StaticResource Surface2}" TextColor="#C63A3A"
+                                            FontSize="14" WidthRequest="34" HeightRequest="34"
+                                            CornerRadius="10" Padding="0" BorderWidth="0"
+                                            VerticalOptions="Center" />
+                                </Grid>
+                            </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

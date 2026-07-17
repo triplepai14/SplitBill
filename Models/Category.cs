@@ -14,4 +14,5 @@ public class Category
     // Display-only aggregates, filled in when listing categories.
     [Ignore] public int BillCount { get; set; }
     [Ignore] public decimal Total { get; set; }
+    [Ignore] public List<Person> People { get; set; } = new();
 }
