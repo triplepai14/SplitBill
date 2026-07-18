@@ -752,3 +752,7 @@ null*
 _Logs/
 
 # Other ignore file and folder
+
+# Release signing — never commit these
+*.keystore
+keystore-password.txt

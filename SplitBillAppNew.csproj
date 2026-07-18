@@ -28,10 +28,10 @@
 		<MauiXamlInflator>SourceGen</MauiXamlInflator>
 
 		<!-- Display name -->
-		<ApplicationTitle>SplitBillAppNew</ApplicationTitle>
+		<ApplicationTitle>Split Bill</ApplicationTitle>
 
-		<!-- App Identifier -->
-		<ApplicationId>com.companyname.splitbillappnew</ApplicationId>
+		<!-- App Identifier (permanent on Play Store — never change once published) -->
+		<ApplicationId>com.magsenium.splitbill</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
