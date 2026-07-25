@@ -5,7 +5,7 @@
        x:Class="SplitBillApp.AppShell"
        FlyoutBehavior="Disabled">
 
-    <ShellContent Title="Split"
+    <ShellContent Title="TallyMore"
                   ContentTemplate="{DataTemplate views:HomePage}"
                   Route="HomePage" />
 </Shell>

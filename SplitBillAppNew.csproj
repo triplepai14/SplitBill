@@ -28,10 +28,10 @@
 		<MauiXamlInflator>SourceGen</MauiXamlInflator>
 
 		<!-- Display name -->
-		<ApplicationTitle>Split Bill</ApplicationTitle>
+		<ApplicationTitle>TallyMore</ApplicationTitle>
 
 		<!-- App Identifier (permanent on Play Store — never change once published) -->
-		<ApplicationId>com.magsenium.splitbill</ApplicationId>
+		<ApplicationId>com.magsenium.tallymore</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -49,7 +49,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#1F8A5B" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#1F8A5B" BaseSize="128,128" />
