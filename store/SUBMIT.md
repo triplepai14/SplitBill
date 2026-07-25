@@ -20,7 +20,7 @@ action only you can do) or **[missing]**.
 | App bundle (.aab) | `bin/Release/net10.0-android/publish/com.magsenium.tallymore-Signed.aab` | ready |
 | App icon 512×512 | `store/icon-512.png` | ready |
 | Feature graphic 1024×500 | `store/feature-1024x500.png` | ready |
-| Phone screenshots (≥2) | `store/screenshots/` | **[missing]** — capture from the app |
+| Phone screenshots (4) | `store/screenshots/` | ready (1080×2316) |
 | Store text (short/full, TH+EN) | `store/listing.md` | ready |
 | Privacy policy | `docs/privacy-policy.html` | ready |
 
@@ -61,7 +61,8 @@ action only you can do) or **[missing]**.
    **Closed testing with ≥12 testers for 14 days** before you can promote
    to Production. Plan testers now. (Company accounts skip this.)
 
-## Still needed
-- **Screenshots** — at least 2 (home/bills, a bill result). Can be
-  captured from the phone with `adb exec-out screencap` once it's
-  connected; ask Claude to grab them.
+## Screenshots (ready in store/screenshots/)
+- `01-home.png` — bills list
+- `02-result.png` — a bill's split result (items + each share)
+- `03-categories.png` — categories tab
+- `04-category.png` — category summary with whole-category settle up
