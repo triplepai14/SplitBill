@@ -42,6 +42,12 @@ public partial class CategoryViewModel : BaseViewModel
     public string DoneLabel => IsDone ? "↩ Reopen trip" : "✓ Mark trip done";
     partial void OnIsDoneChanged(bool value) => OnPropertyChanged(nameof(DoneLabel));
 
+    // Spent-per-person is collapsed by default to keep the page short.
+    [ObservableProperty] private bool showSpent;
+    public string SpentChevron => ShowSpent ? "▾" : "▸";
+    partial void OnShowSpentChanged(bool value) => OnPropertyChanged(nameof(SpentChevron));
+    [RelayCommand] private void ToggleSpent() => ShowSpent = !ShowSpent;
+
     public ObservableCollection<CatBillVM> Bills { get; } = new();
     public ObservableCollection<CatPersonVM> People { get; } = new();
     public ObservableCollection<SettlementVM> Settlements { get; } = new();

@@ -7,6 +7,9 @@
              Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="Auto,*,Auto">
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Tapped="OnDismissKeyboard" />
+        </Grid.GestureRecognizers>
 
         <!-- Header -->
         <HorizontalStackLayout Grid.Row="0" Spacing="10" Padding="16,10,16,12" VerticalOptions="Center">

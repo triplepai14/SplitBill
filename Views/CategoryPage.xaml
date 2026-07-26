@@ -66,8 +66,17 @@
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
 
-                <Label Text="SPENT PER PERSON" Style="{StaticResource SectionLabel}" Margin="4,22,4,11" />
-                <VerticalStackLayout Spacing="9" BindableLayout.ItemsSource="{Binding People}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="4,22,4,11">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ToggleSpentCommand}" />
+                    </Grid.GestureRecognizers>
+                    <Label Grid.Column="0" Text="{Binding SpentChevron}" FontSize="13"
+                           TextColor="{StaticResource SubText}" VerticalOptions="Center" />
+                    <Label Grid.Column="1" Text="SPENT PER PERSON" Style="{StaticResource SectionLabel}"
+                           VerticalOptions="Center" />
+                </Grid>
+                <VerticalStackLayout Spacing="9" IsVisible="{Binding ShowSpent}"
+                                     BindableLayout.ItemsSource="{Binding People}">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="vm:CatPersonVM">
                             <Border BackgroundColor="{StaticResource Surface}" Stroke="{StaticResource LineColor}"

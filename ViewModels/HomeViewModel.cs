@@ -179,8 +179,7 @@ public partial class HomeViewModel : BaseViewModel
             CanToggleDone = b.CategoryId == 0,
             IsDone = b.IsDone,
         };
-        row.OpenCommand = new AsyncRelayCommand(() =>
-            Shell.Current.GoToAsync($"ResultPage?billId={row.BillId}"));
+        row.OpenCommand = new AsyncRelayCommand(() => EditBillAsync(row.BillId));
         row.ShareCommand = new AsyncRelayCommand(() => ShareBillAsync(row.BillId));
         row.DeleteCommand = new AsyncRelayCommand(() => DeleteBillAsync(row.BillId, row.Name));
         row.MoveCommand = new AsyncRelayCommand(() => MovePickerAsync(row));
@@ -190,6 +189,15 @@ public partial class HomeViewModel : BaseViewModel
             await LoadAsync();
         });
         return row;
+    }
+
+    // Tapping a bill opens it in the edit form.
+    private async Task EditBillAsync(int billId)
+    {
+        var detail = await _db.GetBillDetailAsync(billId);
+        if (detail is null) return;
+        _drafts.StartEdit(detail);
+        await Shell.Current.GoToAsync("CreateBillPage");
     }
 
     // Called from the drag & drop drop handler in the code-behind.

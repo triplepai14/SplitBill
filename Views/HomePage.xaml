@@ -13,7 +13,8 @@
                     StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="14,12" Margin="0,0,0,10">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding OpenCommand}" />
-                    <DragGestureRecognizer CanDrag="True" DragStarting="OnBillDragStarting" />
+                    <DragGestureRecognizer CanDrag="True" DragStarting="OnBillDragStarting"
+                                           DropCompleted="OnBillDropCompleted" />
                 </Border.GestureRecognizers>
                 <VerticalStackLayout Spacing="11">
                     <Grid ColumnDefinitions="*,Auto">
