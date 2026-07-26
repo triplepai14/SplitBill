@@ -34,11 +34,13 @@ public partial class BillRowVM : ObservableObject
 public partial class CategoryGroupVM : ObservableObject
 {
     static readonly Color Surface2 = Color.FromArgb("#F6F8F4");
-    static readonly Color CategoryBg = Color.FromArgb("#DCEEE4");   // soft green — categories
-    static readonly Color CategoryStroke = Color.FromArgb("#B4D9C3");
+    static readonly Color Accent = Color.FromArgb("#1F8A5B");       // deep green — categories (like the tab)
+    static readonly Color AccentDark = Color.FromArgb("#166F4A");   // darker green (drag-over / edge)
     static readonly Color Line = Color.FromArgb("#E7EAE4");
-    static readonly Color Accent = Color.FromArgb("#1F8A5B");
-    static readonly Color DragOverBg = Color.FromArgb("#B7DCC5");   // stronger green while dragging over
+    static readonly Color TextC = Color.FromArgb("#16201A");
+    static readonly Color Sub = Color.FromArgb("#6A756F");
+    static readonly Color SubOnGreen = Color.FromArgb("#CFE7DA");   // muted text on green
+    static readonly Color SpecialDragBg = Color.FromArgb("#DCEEE4");
 
     public int CategoryId { get; set; }
     public bool IsSpecial { get; set; }              // the Uncategorized bucket
@@ -56,10 +58,14 @@ public partial class CategoryGroupVM : ObservableObject
     partial void OnIsExpandedChanged(bool value) => OnPropertyChanged(nameof(Chevron));
 
     [ObservableProperty] private bool isDragOver;
-    // Categories are green so they stand out from the white bill cards;
-    // the Uncategorized bucket stays neutral grey.
-    public Color HeaderBg => IsDragOver ? DragOverBg : (IsSpecial ? Surface2 : CategoryBg);
-    public Color HeaderStroke => IsDragOver ? Accent : (IsSpecial ? Line : CategoryStroke);
+    // Categories use the deep tab-green with light text so they stand out from
+    // the white bill cards; the Uncategorized bucket stays neutral grey.
+    public Color HeaderBg => IsSpecial
+        ? (IsDragOver ? SpecialDragBg : Surface2)
+        : (IsDragOver ? AccentDark : Accent);
+    public Color HeaderStroke => IsSpecial ? (IsDragOver ? Accent : Line) : AccentDark;
+    public Color TitleColor => IsSpecial ? TextC : Colors.White;
+    public Color SubColor => IsSpecial ? Sub : SubOnGreen;
     partial void OnIsDragOverChanged(bool value)
     {
         OnPropertyChanged(nameof(HeaderBg));

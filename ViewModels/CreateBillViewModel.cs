@@ -401,8 +401,8 @@ public partial class CreateBillViewModel : BaseViewModel
         if (!decimal.TryParse(ItemPrice, out var price) || price <= 0) return;
 
         var item = new DraftItem { Name = name, Price = price };
-        Draft.Items.Add(item);
-        Items.Add(new MenuRowVM(item, SelectedPeople(), Draft.PayerId, RemoveRow));
+        Draft.Items.Insert(0, item);   // newest on top — no scrolling to find it
+        Items.Insert(0, new MenuRowVM(item, SelectedPeople(), Draft.PayerId, RemoveRow));
 
         ItemName = string.Empty;
         ItemPrice = string.Empty;
