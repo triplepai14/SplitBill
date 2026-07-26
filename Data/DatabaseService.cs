@@ -44,7 +44,7 @@ public class DatabaseService
     {
         if (_db is not null) return _db;
 
-        var path = Path.Combine(FileSystem.AppDataDirectory, "splitbill_v2.db3");
+        var path = Path.Combine(FileSystem.AppDataDirectory, "splitbill_v3.db3");
         _db = new SQLiteAsyncConnection(
             path,
             SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache);
@@ -108,9 +108,44 @@ public class DatabaseService
     public async Task<Category> SaveCategoryAsync(string name)
     {
         var db = await GetConnectionAsync();
-        var cat = new Category { Name = name.Trim() };
+        var cat = new Category { Name = name.Trim(), Date = DateTime.Now };
         await db.InsertAsync(cat);
         return cat;
+    }
+
+    public async Task UpdateCategoryAsync(Category cat)
+    {
+        var db = await GetConnectionAsync();
+        await db.UpdateAsync(cat);
+    }
+
+    public async Task SetCategoryDoneAsync(int categoryId, bool done)
+    {
+        var db = await GetConnectionAsync();
+        var cat = await db.FindAsync<Category>(categoryId);
+        if (cat is null) return;
+        cat.IsDone = done;
+        await db.UpdateAsync(cat);
+    }
+
+    public async Task SetBillDoneAsync(int billId, bool done)
+    {
+        var db = await GetConnectionAsync();
+        var bill = await db.FindAsync<Bill>(billId);
+        if (bill is null) return;
+        bill.IsDone = done;
+        await db.UpdateAsync(bill);
+    }
+
+    /// <summary>Moves a bill into a category (0 = no category). Does not touch
+    /// the bill's ModifiedDate — organizing isn't editing its contents.</summary>
+    public async Task SetBillCategoryAsync(int billId, int categoryId)
+    {
+        var db = await GetConnectionAsync();
+        var bill = await db.FindAsync<Bill>(billId);
+        if (bill is null) return;
+        bill.CategoryId = categoryId;
+        await db.UpdateAsync(bill);
     }
 
     /// <summary>

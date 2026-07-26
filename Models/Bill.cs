@@ -22,6 +22,13 @@ public class Bill
     // The total bill amount, entered by the user (not an auto-sum of items).
     public decimal Amount { get; set; }
 
+    // The bill's own date (defaults to now, user-editable).
+    public DateTime Date { get; set; } = DateTime.Now;
+
+    // Only meaningful for uncategorized bills — a bill inside a category
+    // follows that category's Done state instead.
+    public bool IsDone { get; set; }
+
     public DateTime CreatedDate { get; set; } = DateTime.Now;
 
     // Bumped on every save; equals CreatedDate for a bill never edited.

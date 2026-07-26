@@ -82,6 +82,10 @@ public partial class CreateBillViewModel : BaseViewModel
     // "New bill" when creating, "Edit bill" when reopening an existing one.
     [ObservableProperty] private string pageTitle = "New bill";
 
+    // Editable bill date/time (defaults to now).
+    [ObservableProperty] private DateTime billDate = DateTime.Now;
+    [ObservableProperty] private TimeSpan billTime = DateTime.Now.TimeOfDay;
+
     // Footer button: creating shows the result next, editing just saves.
     [ObservableProperty] private string finishLabel = "See who owes what";
 
@@ -146,6 +150,8 @@ public partial class CreateBillViewModel : BaseViewModel
         FinishLabel = Draft.BillId == 0 ? "See who owes what" : "Save changes";
         BillName = Draft.Name;
         TotalText = Draft.TotalText;
+        BillDate = Draft.Date.Date;
+        BillTime = Draft.Date.TimeOfDay;
         ShowAddCategory = false;
         ShowAddPerson = false;
 
@@ -159,6 +165,8 @@ public partial class CreateBillViewModel : BaseViewModel
     }
 
     partial void OnBillNameChanged(string value) => Draft.Name = value;
+    partial void OnBillDateChanged(DateTime value) => Draft.Date = value.Date + BillTime;
+    partial void OnBillTimeChanged(TimeSpan value) => Draft.Date = BillDate.Date + value;
 
     partial void OnTotalTextChanged(string value)
     {
@@ -393,6 +401,8 @@ public partial class CreateBillViewModel : BaseViewModel
             CategoryId = d.CategoryId ?? 0,
             PayerId = d.PayerId ?? 0,
             Amount = d.Total,
+            Date = d.Date,
+            IsDone = d.IsDone,
             CreatedDate = d.CreatedDate,
         };
 

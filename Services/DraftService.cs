@@ -17,6 +17,8 @@ public class BillDraft
     // 0 = a brand-new bill; otherwise the id of the bill being edited.
     public int BillId { get; set; }
     public DateTime CreatedDate { get; set; } = DateTime.Now;
+    public DateTime Date { get; set; } = DateTime.Now;   // the bill's editable date
+    public bool IsDone { get; set; }
 
     public string Name { get; set; } = string.Empty;
     public int? CategoryId { get; set; }
@@ -52,6 +54,8 @@ public class DraftService
         {
             BillId = detail.Bill.Id,
             CreatedDate = detail.Bill.CreatedDate,
+            Date = detail.Bill.Date,
+            IsDone = detail.Bill.IsDone,
             Name = detail.Bill.Name,
             CategoryId = detail.Bill.CategoryId == 0 ? null : detail.Bill.CategoryId,
             PayerId = detail.Bill.PayerId,
