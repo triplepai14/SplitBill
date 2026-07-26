@@ -107,7 +107,7 @@ public partial class CreateBillViewModel : BaseViewModel
     // the user taps + to edit (expanded by default only for a brand-new bill).
     [ObservableProperty] private bool showDetails;
     public bool DetailsCollapsed => !ShowDetails;
-    public string DetailsIcon => ShowDetails ? "×" : "+";
+    public string DetailsIcon => ShowDetails ? "✕" : "✎";   // pencil = edit
     partial void OnShowDetailsChanged(bool value)
     {
         OnPropertyChanged(nameof(DetailsCollapsed));
@@ -118,7 +118,7 @@ public partial class CreateBillViewModel : BaseViewModel
     // Collapse the "Add an item" form until the user wants it.
     [ObservableProperty] private bool showAddItemForm;
     public bool AddItemCollapsed => !ShowAddItemForm;
-    public string AddItemIcon => ShowAddItemForm ? "×" : "+";
+    public string AddItemIcon => ShowAddItemForm ? "✕" : "✎";   // pencil = edit
     partial void OnShowAddItemFormChanged(bool value)
     {
         OnPropertyChanged(nameof(AddItemCollapsed));

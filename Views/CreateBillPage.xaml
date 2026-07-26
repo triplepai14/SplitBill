@@ -14,100 +14,103 @@
             <Label Text="{Binding PageTitle}" Style="{StaticResource H2}" VerticalOptions="Center" />
         </HorizontalStackLayout>
 
-        <ScrollView Grid.Row="1" Padding="22,6,22,24">
-            <VerticalStackLayout Spacing="0">
+        <ScrollView Grid.Row="1" Padding="20,6,20,24">
+            <VerticalStackLayout Spacing="16">
 
-                <Label Text="Bill name" Style="{StaticResource SectionLabel}" Margin="4,6,4,9" />
-                <Border Style="{StaticResource Field}">
-                    <Entry Text="{Binding BillName}" Placeholder="e.g. Friday dinner" FontSize="16" />
-                </Border>
-
-                <Label Text="Date" Style="{StaticResource SectionLabel}" Margin="4,18,4,9" />
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                    <Border Grid.Column="0" Style="{StaticResource Field}">
-                        <DatePicker Date="{Binding BillDate}" Format="ddd d MMM yyyy"
-                                    FontFamily="PJSans" TextColor="{StaticResource TextColor}" />
+                <VerticalStackLayout Spacing="0">
+                    <Label Text="Bill name" Style="{StaticResource SectionLabel}" Margin="4,0,4,9" />
+                    <Border Style="{StaticResource Field}">
+                        <Entry Text="{Binding BillName}" Placeholder="e.g. Friday dinner" FontSize="16" />
                     </Border>
-                    <Border Grid.Column="1" Style="{StaticResource Field}">
-                        <TimePicker Time="{Binding BillTime}" Format="HH:mm"
-                                    FontFamily="PJSans" TextColor="{StaticResource TextColor}" />
-                    </Border>
-                </Grid>
 
-                <!-- ===== Who & category (collapsible) ===== -->
-                <Grid ColumnDefinitions="*,Auto" Margin="4,20,4,9">
-                    <Label Text="Who &amp; category" Style="{StaticResource SectionLabel}" VerticalOptions="Center" />
-                    <Button Grid.Column="1" Text="{Binding DetailsIcon}" Command="{Binding ToggleDetailsCommand}"
-                            BackgroundColor="{StaticResource Surface2}" TextColor="{StaticResource Accent}"
-                            FontFamily="PJSansBold" FontSize="15" WidthRequest="28" HeightRequest="28"
-                            CornerRadius="9" Padding="0" BorderWidth="0" VerticalOptions="Center" />
-                </Grid>
-
-                <!-- collapsed summary -->
-                <Border Style="{StaticResource Card}" Padding="14,12" IsVisible="{Binding DetailsCollapsed}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ToggleDetailsCommand}" />
-                    </Border.GestureRecognizers>
-                    <VerticalStackLayout Spacing="7">
-                        <Grid ColumnDefinitions="90,*">
-                            <Label Grid.Column="0" Text="Category" Style="{StaticResource Muted}" FontSize="13" />
-                            <Label Grid.Column="1" Text="{Binding CategorySummary}" FontFamily="PJSansSemibold"
-                                   FontSize="14" />
-                        </Grid>
-                        <Grid ColumnDefinitions="90,*">
-                            <Label Grid.Column="0" Text="Splitting" Style="{StaticResource Muted}" FontSize="13" />
-                            <Label Grid.Column="1" Text="{Binding PeopleSummary}" FontFamily="PJSansSemibold"
-                                   FontSize="14" />
-                        </Grid>
-                        <Grid ColumnDefinitions="90,*">
-                            <Label Grid.Column="0" Text="Paid by" Style="{StaticResource Muted}" FontSize="13" />
-                            <Label Grid.Column="1" Text="{Binding PayerSummary}" FontFamily="PJSansSemibold"
-                                   FontSize="14" />
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- expanded editors -->
-                <VerticalStackLayout IsVisible="{Binding ShowDetails}" Spacing="0">
-                    <Label Text="Category · optional" Style="{StaticResource SectionLabel}" Margin="4,4,4,9" />
-                    <FlexLayout Wrap="Wrap" Direction="Row"
-                                BindableLayout.ItemsSource="{Binding CategoryChips}"
-                                BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0">
-                        <Border Grid.Column="0" Style="{StaticResource Field}" StrokeShape="RoundRectangle 12">
-                            <Entry Text="{Binding NewCategoryName}" Placeholder="New category…" FontSize="14" />
+                    <Label Text="Date" Style="{StaticResource SectionLabel}" Margin="4,16,4,9" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <Border Grid.Column="0" Style="{StaticResource Field}">
+                            <DatePicker Date="{Binding BillDate}" Format="ddd d MMM yyyy"
+                                        FontFamily="PJSans" TextColor="{StaticResource TextColor}" />
                         </Border>
-                        <Button Grid.Column="1" Text="Add" Command="{Binding AddCategoryCommand}"
-                                BackgroundColor="{StaticResource Surface2}" TextColor="{StaticResource TextColor}"
-                                FontFamily="PJSansBold" FontSize="14" CornerRadius="12" BorderWidth="0"
-                                HeightRequest="44" Padding="16,0" />
-                    </Grid>
-
-                    <Label Text="Who's splitting?" Style="{StaticResource SectionLabel}" Margin="4,18,4,9" />
-                    <FlexLayout Wrap="Wrap" Direction="Row"
-                                BindableLayout.ItemsSource="{Binding PeopleChips}"
-                                BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0">
-                        <Border Grid.Column="0" Style="{StaticResource Field}" StrokeShape="RoundRectangle 12">
-                            <Entry Text="{Binding NewPersonName}" Placeholder="Add someone new…" FontSize="14" />
+                        <Border Grid.Column="1" Style="{StaticResource Field}">
+                            <TimePicker Time="{Binding BillTime}" Format="HH:mm"
+                                        FontFamily="PJSans" TextColor="{StaticResource TextColor}" />
                         </Border>
-                        <Button Grid.Column="1" Text="Add" Command="{Binding AddPersonCommand}"
-                                BackgroundColor="{StaticResource Surface2}" TextColor="{StaticResource TextColor}"
-                                FontFamily="PJSansBold" FontSize="14" CornerRadius="12" BorderWidth="0"
-                                HeightRequest="44" Padding="16,0" />
                     </Grid>
-
-                    <VerticalStackLayout IsVisible="{Binding HasPeople}" Spacing="0">
-                        <Label Text="Who paid? · they cover the bill" Style="{StaticResource SectionLabel}"
-                               Margin="4,18,4,9" />
-                        <FlexLayout Wrap="Wrap" Direction="Row"
-                                    BindableLayout.ItemsSource="{Binding PayerChips}"
-                                    BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
-                    </VerticalStackLayout>
                 </VerticalStackLayout>
 
-                <!-- ===== Total (compact) ===== -->
-                <Border Style="{StaticResource Card}" Padding="14,14" Margin="0,20,0,0">
+                <!-- ===================== Who & category (framed) ===================== -->
+                <Border BackgroundColor="{StaticResource Surface2}" Stroke="{StaticResource LineColor}"
+                        StrokeThickness="1.5" StrokeShape="RoundRectangle 20" Padding="16">
+                    <VerticalStackLayout Spacing="0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Who &amp; category" Style="{StaticResource SectionLabel}"
+                                   VerticalOptions="Center" />
+                            <Button Grid.Column="1" Text="{Binding DetailsIcon}" Command="{Binding ToggleDetailsCommand}"
+                                    BackgroundColor="{StaticResource Surface}" TextColor="{StaticResource Accent}"
+                                    FontFamily="PJSans" FontSize="15" WidthRequest="34" HeightRequest="34"
+                                    CornerRadius="10" Padding="0" BorderWidth="0" VerticalOptions="Center" />
+                        </Grid>
+
+                        <!-- collapsed summary (tap to edit) -->
+                        <VerticalStackLayout Spacing="7" Margin="0,12,0,0" IsVisible="{Binding DetailsCollapsed}">
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToggleDetailsCommand}" />
+                            </VerticalStackLayout.GestureRecognizers>
+                            <Grid ColumnDefinitions="90,*">
+                                <Label Grid.Column="0" Text="Category" Style="{StaticResource Muted}" FontSize="13" />
+                                <Label Grid.Column="1" Text="{Binding CategorySummary}" FontFamily="PJSansSemibold" FontSize="14" />
+                            </Grid>
+                            <Grid ColumnDefinitions="90,*">
+                                <Label Grid.Column="0" Text="Splitting" Style="{StaticResource Muted}" FontSize="13" />
+                                <Label Grid.Column="1" Text="{Binding PeopleSummary}" FontFamily="PJSansSemibold" FontSize="14" />
+                            </Grid>
+                            <Grid ColumnDefinitions="90,*">
+                                <Label Grid.Column="0" Text="Paid by" Style="{StaticResource Muted}" FontSize="13" />
+                                <Label Grid.Column="1" Text="{Binding PayerSummary}" FontFamily="PJSansSemibold" FontSize="14" />
+                            </Grid>
+                        </VerticalStackLayout>
+
+                        <!-- expanded editors -->
+                        <VerticalStackLayout IsVisible="{Binding ShowDetails}" Spacing="0" Margin="0,4,0,0">
+                            <Label Text="Category · optional" Style="{StaticResource SectionLabel}" Margin="4,8,4,9" />
+                            <FlexLayout Wrap="Wrap" Direction="Row"
+                                        BindableLayout.ItemsSource="{Binding CategoryChips}"
+                                        BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0">
+                                <Border Grid.Column="0" Style="{StaticResource Field}" StrokeShape="RoundRectangle 12">
+                                    <Entry Text="{Binding NewCategoryName}" Placeholder="New category…" FontSize="14" />
+                                </Border>
+                                <Button Grid.Column="1" Text="Add" Command="{Binding AddCategoryCommand}"
+                                        BackgroundColor="{StaticResource Surface}" TextColor="{StaticResource TextColor}"
+                                        FontFamily="PJSansBold" FontSize="14" CornerRadius="12" BorderWidth="0"
+                                        HeightRequest="44" Padding="16,0" />
+                            </Grid>
+
+                            <Label Text="Who's splitting?" Style="{StaticResource SectionLabel}" Margin="4,18,4,9" />
+                            <FlexLayout Wrap="Wrap" Direction="Row"
+                                        BindableLayout.ItemsSource="{Binding PeopleChips}"
+                                        BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0">
+                                <Border Grid.Column="0" Style="{StaticResource Field}" StrokeShape="RoundRectangle 12">
+                                    <Entry Text="{Binding NewPersonName}" Placeholder="Add someone new…" FontSize="14" />
+                                </Border>
+                                <Button Grid.Column="1" Text="Add" Command="{Binding AddPersonCommand}"
+                                        BackgroundColor="{StaticResource Surface}" TextColor="{StaticResource TextColor}"
+                                        FontFamily="PJSansBold" FontSize="14" CornerRadius="12" BorderWidth="0"
+                                        HeightRequest="44" Padding="16,0" />
+                            </Grid>
+
+                            <VerticalStackLayout IsVisible="{Binding HasPeople}" Spacing="0">
+                                <Label Text="Who paid? · they cover the bill" Style="{StaticResource SectionLabel}"
+                                       Margin="4,18,4,9" />
+                                <FlexLayout Wrap="Wrap" Direction="Row"
+                                            BindableLayout.ItemsSource="{Binding PayerChips}"
+                                            BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ===================== Total (compact) ===================== -->
+                <Border Style="{StaticResource Card}" Padding="14,14">
                     <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
                         <Label Text="TOTAL BILL AMOUNT" FontFamily="PJSansBold" FontSize="11"
                                TextColor="{StaticResource SubText}" HorizontalOptions="Center" />
@@ -138,71 +141,78 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- ===== Items (add form collapsible) ===== -->
-                <Grid ColumnDefinitions="*,Auto" Margin="4,22,4,10">
-                    <VerticalStackLayout Grid.Column="0" Spacing="2">
-                        <Label Text="ITEMS NOT SHARED EQUALLY · optional" Style="{StaticResource SectionLabel}" />
-                        <Label Text="The total splits equally. Add only items some people skipped."
-                               Style="{StaticResource Muted}" FontSize="12" />
-                    </VerticalStackLayout>
-                    <Button Grid.Column="1" Text="{Binding AddItemIcon}" Command="{Binding ToggleAddItemFormCommand}"
-                            BackgroundColor="{StaticResource Surface2}" TextColor="{StaticResource Accent}"
-                            FontFamily="PJSansBold" FontSize="15" WidthRequest="28" HeightRequest="28"
-                            CornerRadius="9" Padding="0" BorderWidth="0" VerticalOptions="Center" />
-                </Grid>
-
-                <VerticalStackLayout Spacing="12" BindableLayout.ItemsSource="{Binding Items}">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="vm:MenuRowVM">
-                            <Border Style="{StaticResource Card}" Padding="16,15">
-                                <VerticalStackLayout Spacing="0">
-                                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
-                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                            <Label Text="{Binding Name}" FontFamily="PJSansBold" FontSize="16" />
-                                            <Label Text="{Binding SplitLabel}" Style="{StaticResource Muted}"
-                                                   FontSize="12" />
-                                        </VerticalStackLayout>
-                                        <Label Grid.Column="1" Text="{Binding PriceLabel}"
-                                               FontFamily="PJSansExtra" FontSize="17" VerticalOptions="Center" />
-                                        <Button Grid.Column="2" Text="✕" Command="{Binding RemoveCommand}"
-                                                BackgroundColor="{StaticResource Surface2}"
-                                                TextColor="{StaticResource SubText}" FontSize="13"
-                                                WidthRequest="28" HeightRequest="28" CornerRadius="8"
-                                                Padding="0" BorderWidth="0" VerticalOptions="Center" />
-                                    </Grid>
-                                    <Label Text="TAP TO EXCLUDE FROM THIS ITEM" FontFamily="PJSansSemibold"
-                                           FontSize="11" TextColor="{StaticResource SubText}" Margin="0,13,0,8" />
-                                    <FlexLayout Wrap="Wrap" Direction="Row"
-                                                BindableLayout.ItemsSource="{Binding ExcludeChips}"
-                                                BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
-                                </VerticalStackLayout>
-                            </Border>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </VerticalStackLayout>
-
+                <!-- ===================== Items (framed) ===================== -->
                 <Border BackgroundColor="{StaticResource Surface2}" Stroke="{StaticResource LineColor}"
-                        StrokeThickness="1" StrokeShape="RoundRectangle 20" Padding="16,15" Margin="0,12,0,0"
-                        IsVisible="{Binding ShowAddItemForm}">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Add an item" Style="{StaticResource SectionLabel}" />
-                        <Border Style="{StaticResource Field}" StrokeShape="RoundRectangle 12">
-                            <Entry Text="{Binding ItemName}" Placeholder="Item name (e.g. Pad Thai)" FontSize="15" />
-                        </Border>
-                        <Grid ColumnDefinitions="128,*" ColumnSpacing="8">
-                            <Border Grid.Column="0" Style="{StaticResource Field}" StrokeShape="RoundRectangle 12">
-                                <HorizontalStackLayout Spacing="4">
-                                    <Label Text="฿" FontFamily="PJSansBold" TextColor="{StaticResource SubText}"
-                                           VerticalOptions="Center" />
-                                    <Entry Text="{Binding ItemPrice}" Placeholder="0" Keyboard="Numeric"
-                                           FontSize="15" WidthRequest="80" />
-                                </HorizontalStackLayout>
-                            </Border>
-                            <Button Grid.Column="1" Text="Add item" Command="{Binding AddItemCommand}"
-                                    BackgroundColor="{StaticResource Accent}" TextColor="White"
-                                    FontFamily="PJSansBold" FontSize="15" CornerRadius="12"
-                                    HeightRequest="46" BorderWidth="0" />
+                        StrokeThickness="1.5" StrokeShape="RoundRectangle 20" Padding="16">
+                    <VerticalStackLayout Spacing="0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="ITEMS NOT SHARED EQUALLY · optional" Style="{StaticResource SectionLabel}" />
+                                <Label Text="The total splits equally. Add only items some people skipped."
+                                       Style="{StaticResource Muted}" FontSize="12" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="{Binding AddItemIcon}" Command="{Binding ToggleAddItemFormCommand}"
+                                    BackgroundColor="{StaticResource Surface}" TextColor="{StaticResource Accent}"
+                                    FontFamily="PJSans" FontSize="15" WidthRequest="34" HeightRequest="34"
+                                    CornerRadius="10" Padding="0" BorderWidth="0" VerticalOptions="Start" />
                         </Grid>
+
+                        <!-- Add an item — always at the top of the section -->
+                        <Border BackgroundColor="{StaticResource Surface}" Stroke="{StaticResource LineColor}"
+                                StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="14,14"
+                                Margin="0,12,0,0" IsVisible="{Binding ShowAddItemForm}">
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="Add an item" Style="{StaticResource SectionLabel}" />
+                                <Border Style="{StaticResource Field}" StrokeShape="RoundRectangle 12">
+                                    <Entry Text="{Binding ItemName}" Placeholder="Item name (e.g. Pad Thai)" FontSize="15" />
+                                </Border>
+                                <Grid ColumnDefinitions="128,*" ColumnSpacing="8">
+                                    <Border Grid.Column="0" Style="{StaticResource Field}" StrokeShape="RoundRectangle 12">
+                                        <HorizontalStackLayout Spacing="4">
+                                            <Label Text="฿" FontFamily="PJSansBold" TextColor="{StaticResource SubText}"
+                                                   VerticalOptions="Center" />
+                                            <Entry Text="{Binding ItemPrice}" Placeholder="0" Keyboard="Numeric"
+                                                   FontSize="15" WidthRequest="80" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                    <Button Grid.Column="1" Text="Add item" Command="{Binding AddItemCommand}"
+                                            BackgroundColor="{StaticResource Accent}" TextColor="White"
+                                            FontFamily="PJSansBold" FontSize="15" CornerRadius="12"
+                                            HeightRequest="46" BorderWidth="0" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Existing items -->
+                        <VerticalStackLayout Spacing="10" Margin="0,12,0,0"
+                                             BindableLayout.ItemsSource="{Binding Items}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:MenuRowVM">
+                                    <Border Style="{StaticResource Card}" Padding="14,13">
+                                        <VerticalStackLayout Spacing="0">
+                                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                                    <Label Text="{Binding Name}" FontFamily="PJSansBold" FontSize="16" />
+                                                    <Label Text="{Binding SplitLabel}" Style="{StaticResource Muted}" FontSize="12" />
+                                                </VerticalStackLayout>
+                                                <Label Grid.Column="1" Text="{Binding PriceLabel}"
+                                                       FontFamily="PJSansExtra" FontSize="17" VerticalOptions="Center" />
+                                                <Button Grid.Column="2" Text="✕" Command="{Binding RemoveCommand}"
+                                                        BackgroundColor="{StaticResource Surface2}"
+                                                        TextColor="{StaticResource SubText}" FontSize="13"
+                                                        WidthRequest="28" HeightRequest="28" CornerRadius="8"
+                                                        Padding="0" BorderWidth="0" VerticalOptions="Center" />
+                                            </Grid>
+                                            <Label Text="TAP TO EXCLUDE FROM THIS ITEM" FontFamily="PJSansSemibold"
+                                                   FontSize="11" TextColor="{StaticResource SubText}" Margin="0,13,0,8" />
+                                            <FlexLayout Wrap="Wrap" Direction="Row"
+                                                        BindableLayout.ItemsSource="{Binding ExcludeChips}"
+                                                        BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
 
