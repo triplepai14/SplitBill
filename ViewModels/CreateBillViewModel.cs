@@ -103,6 +103,49 @@ public partial class CreateBillViewModel : BaseViewModel
     [RelayCommand] private void ToggleAddCategory() => ShowAddCategory = !ShowAddCategory;
     [RelayCommand] private void ToggleAddPerson() => ShowAddPerson = !ShowAddPerson;
 
+    // Collapse the category/people/payer editors into a one-line summary until
+    // the user taps + to edit (expanded by default only for a brand-new bill).
+    [ObservableProperty] private bool showDetails;
+    public bool DetailsCollapsed => !ShowDetails;
+    public string DetailsIcon => ShowDetails ? "×" : "+";
+    partial void OnShowDetailsChanged(bool value)
+    {
+        OnPropertyChanged(nameof(DetailsCollapsed));
+        OnPropertyChanged(nameof(DetailsIcon));
+    }
+    [RelayCommand] private void ToggleDetails() => ShowDetails = !ShowDetails;
+
+    // Collapse the "Add an item" form until the user wants it.
+    [ObservableProperty] private bool showAddItemForm;
+    public bool AddItemCollapsed => !ShowAddItemForm;
+    public string AddItemIcon => ShowAddItemForm ? "×" : "+";
+    partial void OnShowAddItemFormChanged(bool value)
+    {
+        OnPropertyChanged(nameof(AddItemCollapsed));
+        OnPropertyChanged(nameof(AddItemIcon));
+    }
+    [RelayCommand] private void ToggleAddItemForm() => ShowAddItemForm = !ShowAddItemForm;
+
+    // Collapsed summaries
+    public string CategorySummary => CategoryChips.FirstOrDefault(c => c.Active)?.Name ?? "None";
+    public string PeopleSummary
+    {
+        get
+        {
+            var names = _allPeople.Where(p => Draft.PeopleIds.Contains(p.Id)).Select(p => p.Name).ToList();
+            return names.Count == 0 ? "No one yet" : string.Join(", ", names);
+        }
+    }
+    public string PayerSummary =>
+        _allPeople.FirstOrDefault(p => p.Id == Draft.PayerId)?.Name ?? "—";
+
+    private void RaiseSummaries()
+    {
+        OnPropertyChanged(nameof(CategorySummary));
+        OnPropertyChanged(nameof(PeopleSummary));
+        OnPropertyChanged(nameof(PayerSummary));
+    }
+
     // ---- total + items ----
     [ObservableProperty] private string totalText = string.Empty;
     [ObservableProperty] private string itemName = string.Empty;
@@ -154,6 +197,8 @@ public partial class CreateBillViewModel : BaseViewModel
         BillTime = Draft.Date.TimeOfDay;
         ShowAddCategory = false;
         ShowAddPerson = false;
+        ShowAddItemForm = false;
+        ShowDetails = Draft.BillId == 0;   // new bill starts expanded; editing starts collapsed
 
         _allPeople = await _db.GetPeopleAsync();
         await BuildCategoryChipsAsync();
@@ -162,6 +207,7 @@ public partial class CreateBillViewModel : BaseViewModel
         UpdatePayerDisplay();
         RebuildItemRows();
         RaiseTotals();
+        RaiseSummaries();
     }
 
     partial void OnBillNameChanged(string value) => Draft.Name = value;
@@ -203,6 +249,7 @@ public partial class CreateBillViewModel : BaseViewModel
     {
         Draft.CategoryId = chip.Id == 0 ? null : chip.Id;
         foreach (var c in CategoryChips) c.Active = c.Id == chip.Id;
+        RaiseSummaries();
     }
 
     [RelayCommand]
@@ -287,6 +334,7 @@ public partial class CreateBillViewModel : BaseViewModel
         RebuildItemRows();
         HasPeople = Draft.PeopleIds.Count > 0;
         RaiseTotals();
+        RaiseSummaries();
     }
 
     // ---------- payer ----------
@@ -317,6 +365,7 @@ public partial class CreateBillViewModel : BaseViewModel
         RefreshCrowns();
         UpdatePayerDisplay();
         RebuildItemRows();   // move the crown to the new payer
+        RaiseSummaries();
     }
 
     // Keep the crown on the payer's chip in every chip row.
