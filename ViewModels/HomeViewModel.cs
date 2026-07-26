@@ -34,7 +34,11 @@ public partial class BillRowVM : ObservableObject
 public partial class CategoryGroupVM : ObservableObject
 {
     static readonly Color Surface2 = Color.FromArgb("#F6F8F4");
-    static readonly Color DragOverBg = Color.FromArgb("#CDE7D6");   // highlight while dragging over
+    static readonly Color CategoryBg = Color.FromArgb("#DCEEE4");   // soft green — categories
+    static readonly Color CategoryStroke = Color.FromArgb("#B4D9C3");
+    static readonly Color Line = Color.FromArgb("#E7EAE4");
+    static readonly Color Accent = Color.FromArgb("#1F8A5B");
+    static readonly Color DragOverBg = Color.FromArgb("#B7DCC5");   // stronger green while dragging over
 
     public int CategoryId { get; set; }
     public bool IsSpecial { get; set; }              // the Uncategorized bucket
@@ -52,8 +56,15 @@ public partial class CategoryGroupVM : ObservableObject
     partial void OnIsExpandedChanged(bool value) => OnPropertyChanged(nameof(Chevron));
 
     [ObservableProperty] private bool isDragOver;
-    public Color HeaderBg => IsDragOver ? DragOverBg : Surface2;
-    partial void OnIsDragOverChanged(bool value) => OnPropertyChanged(nameof(HeaderBg));
+    // Categories are green so they stand out from the white bill cards;
+    // the Uncategorized bucket stays neutral grey.
+    public Color HeaderBg => IsDragOver ? DragOverBg : (IsSpecial ? Surface2 : CategoryBg);
+    public Color HeaderStroke => IsDragOver ? Accent : (IsSpecial ? Line : CategoryStroke);
+    partial void OnIsDragOverChanged(bool value)
+    {
+        OnPropertyChanged(nameof(HeaderBg));
+        OnPropertyChanged(nameof(HeaderStroke));
+    }
 
     public ICommand? ToggleCommand { get; set; }
     public ICommand? OpenSummaryCommand { get; set; }

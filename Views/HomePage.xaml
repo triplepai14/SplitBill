@@ -96,7 +96,7 @@
                         <DataTemplate x:DataType="vm:CategoryGroupVM">
                             <VerticalStackLayout Spacing="10">
                                 <Border BackgroundColor="{Binding HeaderBg}"
-                                        Stroke="{StaticResource LineColor}" StrokeThickness="1"
+                                        Stroke="{Binding HeaderStroke}" StrokeThickness="1.5"
                                         StrokeShape="RoundRectangle 16" Padding="14,12">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding ToggleCommand}" />
