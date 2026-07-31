@@ -18,6 +18,10 @@ public partial class BillRowVM : ObservableObject
     public string CountLabel { get; set; } = "";
     public List<AvatarVM> Avatars { get; set; } = new();
 
+    // Pending bills are tinted green; settled ones stay plain white.
+    public Color CardBg { get; set; } = Colors.White;
+    public Color CardSub { get; set; } = Color.FromArgb("#6A756F");
+
     public bool CanToggleDone { get; set; }          // only uncategorized bills
     [ObservableProperty] private bool isDone;
     public string DoneLabel => IsDone ? "↩" : "✓";
@@ -34,10 +38,10 @@ public partial class BillRowVM : ObservableObject
 public partial class CategoryGroupVM : ObservableObject
 {
     static readonly Color Surface2 = Color.FromArgb("#F6F8F4");
-    static readonly Color Accent = Color.FromArgb("#1F8A5B");       // deep green — settled (Done tab)
+    static readonly Color Accent = Color.FromArgb("#1F8A5B");       // brand green — still open (Pending tab)
     static readonly Color AccentDark = Color.FromArgb("#166F4A");   // darker green (drag-over / edge)
-    static readonly Color PendingBg = Color.FromArgb("#2E3D34");    // deep ink-green — still open (Pending tab)
-    static readonly Color PendingDark = Color.FromArgb("#212C25");  // darker ink (drag-over / edge)
+    static readonly Color DoneBgC = Color.FromArgb("#2E3D34");      // deep ink — settled (Done tab)
+    static readonly Color DoneDark = Color.FromArgb("#212C25");     // darker ink (drag-over / edge)
     static readonly Color Line = Color.FromArgb("#E7EAE4");
     static readonly Color TextC = Color.FromArgb("#16201A");
     static readonly Color Sub = Color.FromArgb("#6A756F");
@@ -62,18 +66,18 @@ public partial class CategoryGroupVM : ObservableObject
 
     [ObservableProperty] private bool isDragOver;
     // Categories get a dark header with light text so they stand out from the
-    // white bill cards: ink-green while pending, brand green once settled.
+    // bill cards: brand green while pending, deep ink once settled.
     // The Uncategorized bucket stays neutral grey.
     public Color HeaderBg => IsSpecial
         ? (IsDragOver ? SpecialDragBg : Surface2)
         : IsDone
-            ? (IsDragOver ? AccentDark : Accent)
-            : (IsDragOver ? PendingDark : PendingBg);
+            ? (IsDragOver ? DoneDark : DoneBgC)
+            : (IsDragOver ? AccentDark : Accent);
     public Color HeaderStroke => IsSpecial
         ? (IsDragOver ? Accent : Line)
-        : (IsDone ? AccentDark : PendingDark);
+        : (IsDone ? DoneDark : AccentDark);
     public Color TitleColor => IsSpecial ? TextC : Colors.White;
-    public Color SubColor => IsSpecial ? Sub : (IsDone ? SubOnGreen : SubOnInk);
+    public Color SubColor => IsSpecial ? Sub : (IsDone ? SubOnInk : SubOnGreen);
     partial void OnIsDragOverChanged(bool value)
     {
         OnPropertyChanged(nameof(HeaderBg));
@@ -203,6 +207,8 @@ public partial class HomeViewModel : BaseViewModel
             Avatars = avatars,
             CanToggleDone = b.CategoryId == 0,
             IsDone = b.IsDone,
+            CardBg = ShowDone ? Colors.White : Color.FromArgb("#99CC9D"),
+            CardSub = ShowDone ? Color.FromArgb("#6A756F") : Color.FromArgb("#33452F"),
         };
         row.OpenCommand = new AsyncRelayCommand(() => EditBillAsync(row.BillId));
         row.ShareCommand = new AsyncRelayCommand(() => ShareBillAsync(row.BillId));

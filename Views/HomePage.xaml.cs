@@ -19,6 +19,7 @@ public partial class HomePage : ContentPage
     }
 
     private Border? _draggingBorder;
+    private Color? _draggingBorderBg;
 
     // Stash the dragged bill and lift + tint its card so the long-press reads.
     private void OnBillDragStarting(object? sender, DragStartingEventArgs e)
@@ -29,6 +30,7 @@ public partial class HomePage : ContentPage
         if (sender is GestureRecognizer g && g.Parent is Border b)
         {
             _draggingBorder = b;
+            _draggingBorderBg = b.BackgroundColor;           // remember the card's own tint
             b.BackgroundColor = Color.FromArgb("#CDE7D6");   // soft green highlight
             _ = b.ScaleTo(1.03, 120, Easing.CubicOut);
         }
@@ -39,9 +41,10 @@ public partial class HomePage : ContentPage
     {
         if (_draggingBorder is Border b)
         {
-            b.BackgroundColor = Colors.White;
+            b.BackgroundColor = _draggingBorderBg ?? Colors.White;
             _ = b.ScaleTo(1.0, 120, Easing.CubicIn);
             _draggingBorder = null;
+            _draggingBorderBg = null;
         }
     }
 

@@ -9,7 +9,7 @@
     <ContentPage.Resources>
         <!-- A draggable bill row -->
         <DataTemplate x:Key="BillRowTemplate" x:DataType="vm:BillRowVM">
-            <Border BackgroundColor="{StaticResource Surface}" Stroke="{StaticResource LineColor}"
+            <Border BackgroundColor="{Binding CardBg}" Stroke="{StaticResource LineColor}"
                     StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="14,12" Margin="0,0,0,10">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding OpenCommand}" />
@@ -20,7 +20,7 @@
                     <Grid ColumnDefinitions="*,Auto">
                         <VerticalStackLayout Grid.Column="0" Spacing="2">
                             <Label Text="{Binding Name}" FontFamily="PJSansBold" FontSize="16" />
-                            <Label Text="{Binding PaidByLabel}" Style="{StaticResource Muted}" FontSize="12" />
+                            <Label Text="{Binding PaidByLabel}" TextColor="{Binding CardSub}" FontSize="12" />
                         </VerticalStackLayout>
                         <Label Grid.Column="1" Text="{Binding TotalLabel}" FontFamily="PJSansExtra"
                                FontSize="18" VerticalOptions="Center" />
@@ -41,8 +41,8 @@
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </HorizontalStackLayout>
-                        <Label Grid.Column="1" Text="{Binding CountLabel}" Style="{StaticResource Muted}"
-                               Margin="10,0,0,0" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="{Binding CountLabel}" TextColor="{Binding CardSub}"
+                               FontSize="13" Margin="10,0,0,0" VerticalOptions="Center" />
                         <Button Grid.Column="2" Text="{Binding DoneLabel}" Command="{Binding DoneCommand}"
                                 IsVisible="{Binding CanToggleDone}"
                                 BackgroundColor="{StaticResource Surface2}" TextColor="{StaticResource Accent}"
