@@ -441,21 +441,25 @@ public partial class CreateBillViewModel : BaseViewModel
     }
 
     // ---------- finish ----------
-    [RelayCommand]
-    private async Task FinishAsync()
+
+    /// <summary>
+    /// Validates and writes the draft. Returns the saved bill id, or null if
+    /// something was missing (the user has already been told what).
+    /// </summary>
+    private async Task<int?> SaveDraftAsync()
     {
         var d = Draft;
         if (d.PeopleIds.Count == 0)
         {
             await Shell.Current.DisplayAlertAsync("Add people",
                 "Pick at least one person to split with.", "OK");
-            return;
+            return null;
         }
         if (d.Total <= 0)
         {
             await Shell.Current.DisplayAlertAsync("Enter a total",
                 "Enter the total bill amount before splitting.", "OK");
-            return;
+            return null;
         }
 
         d.PayerId ??= d.PeopleIds.FirstOrDefault();
@@ -466,7 +470,6 @@ public partial class CreateBillViewModel : BaseViewModel
                 i.Excluded.Where(id => d.PeopleIds.Contains(id)).ToList()))
             .ToList();
 
-        var isNew = d.BillId == 0;
         var bill = new Bill
         {
             Id = d.BillId,
@@ -480,19 +483,41 @@ public partial class CreateBillViewModel : BaseViewModel
         };
 
         var id = await _db.SaveBillAsync(bill, d.PeopleIds, items);
-        d.BillId = id;   // keep the draft so the user can step back and edit
-        await Shell.Current.GoToAsync($"ResultPage?billId={id}&created={(isNew ? 1 : 0)}");
+        d.BillId = id;
+        IsExistingBill = true;
+        return id;
+    }
+
+    [RelayCommand]
+    private async Task FinishAsync()
+    {
+        var isNew = Draft.BillId == 0;
+        var id = await SaveDraftAsync();
+        if (id is null) return;
+
+        if (isNew)
+        {
+            // Keep the draft so the back chevron returns to a filled-in form.
+            await Shell.Current.GoToAsync($"ResultPage?billId={id}&created=1");
+            return;
+        }
+
+        // Saving an edit takes you back to the list.
+        _drafts.Clear();
+        await Shell.Current.GoToAsync("//HomePage");
     }
 
     [RelayCommand]
     private async Task BackAsync() => await Shell.Current.GoToAsync("..");
 
-    // Shares the bill as last saved — save your edits first to include them.
+    // Saves any pending edits first, so the summary matches what's on screen.
     [RelayCommand]
     private async Task ShareAsync()
     {
-        if (Draft.BillId == 0) return;
-        var detail = await _db.GetBillDetailAsync(Draft.BillId);
+        var id = await SaveDraftAsync();
+        if (id is null) return;
+
+        var detail = await _db.GetBillDetailAsync(id.Value);
         if (detail is null) return;
 
         await Share.Default.RequestAsync(new ShareTextRequest

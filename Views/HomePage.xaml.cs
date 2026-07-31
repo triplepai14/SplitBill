@@ -32,7 +32,7 @@ public partial class HomePage : ContentPage
             _draggingBorder = b;
             _draggingBorderBg = b.BackgroundColor;           // remember the card's own tint
             b.BackgroundColor = Color.FromArgb("#CDE7D6");   // soft green highlight
-            _ = b.ScaleTo(1.03, 120, Easing.CubicOut);
+            _ = b.ScaleToAsync(1.03, 120, Easing.CubicOut);
         }
     }
 
@@ -42,7 +42,7 @@ public partial class HomePage : ContentPage
         if (_draggingBorder is Border b)
         {
             b.BackgroundColor = _draggingBorderBg ?? Colors.White;
-            _ = b.ScaleTo(1.0, 120, Easing.CubicIn);
+            _ = b.ScaleToAsync(1.0, 120, Easing.CubicIn);
             _draggingBorder = null;
             _draggingBorderBg = null;
         }

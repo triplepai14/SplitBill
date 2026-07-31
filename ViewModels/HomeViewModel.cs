@@ -21,15 +21,14 @@ public partial class BillRowVM : ObservableObject
     // Pending bills are tinted green; settled ones go light grey.
     public Color CardBg { get; set; } = Colors.White;
     public Color CardSub { get; set; } = Color.FromArgb("#6A756F");
-    public bool ShowShare { get; set; }              // sharing a bill is a Done-tab action
 
     public bool CanToggleDone { get; set; }          // only uncategorized bills
     [ObservableProperty] private bool isDone;
     public string DoneLabel => IsDone ? "↩" : "✓";
     partial void OnIsDoneChanged(bool value) => OnPropertyChanged(nameof(DoneLabel));
 
-    public ICommand? OpenCommand { get; set; }
-    public ICommand? ShareCommand { get; set; }
+    public ICommand? OpenCommand { get; set; }       // tap the card -> edit
+    public ICommand? ViewCommand { get; set; }       // "View ›" -> the split detail
     public ICommand? DeleteCommand { get; set; }
     public ICommand? DoneCommand { get; set; }
 }
@@ -37,7 +36,8 @@ public partial class BillRowVM : ObservableObject
 // A collapsible group: a real category, or the special "Uncategorized" bucket.
 public partial class CategoryGroupVM : ObservableObject
 {
-    static readonly Color Surface2 = Color.FromArgb("#F6F8F4");
+    static readonly Color Surface2 = Color.FromArgb("#EDE0CE");        // light brown — Uncategorized
+    static readonly Color SpecialStroke = Color.FromArgb("#D8C3A5");
     static readonly Color Accent = Color.FromArgb("#1F8A5B");       // brand green — still open (Pending tab)
     static readonly Color AccentDark = Color.FromArgb("#166F4A");   // darker green (drag-over / edge)
     static readonly Color DoneBgC = Color.FromArgb("#2E3D34");      // deep ink — settled (Done tab)
@@ -47,7 +47,7 @@ public partial class CategoryGroupVM : ObservableObject
     static readonly Color Sub = Color.FromArgb("#6A756F");
     static readonly Color SubOnGreen = Color.FromArgb("#CFE7DA");   // muted text on green
     static readonly Color SubOnInk = Color.FromArgb("#C3D0C7");     // muted text on ink
-    static readonly Color SpecialDragBg = Color.FromArgb("#DCEEE4");
+    static readonly Color SpecialDragBg = Color.FromArgb("#DFC9A8");   // deeper brown while dragging over
 
     public int CategoryId { get; set; }
     public bool IsSpecial { get; set; }              // the Uncategorized bucket
@@ -77,7 +77,7 @@ public partial class CategoryGroupVM : ObservableObject
             ? (IsDragOver ? DoneDark : DoneBgC)
             : (IsDragOver ? AccentDark : Accent);
     public Color HeaderStroke => IsSpecial
-        ? (IsDragOver ? Accent : Line)
+        ? SpecialStroke
         : (IsDone ? DoneDark : AccentDark);
     public Color TitleColor => IsSpecial ? TextC : Colors.White;
     public Color SubColor => IsSpecial ? Sub : (IsDone ? SubOnInk : SubOnGreen);
@@ -212,10 +212,10 @@ public partial class HomeViewModel : BaseViewModel
             IsDone = b.IsDone,
             CardBg = ShowDone ? Color.FromArgb("#E4E8E2") : Color.FromArgb("#99CC9D"),
             CardSub = ShowDone ? Color.FromArgb("#6A756F") : Color.FromArgb("#33452F"),
-            ShowShare = ShowDone,
         };
         row.OpenCommand = new AsyncRelayCommand(() => EditBillAsync(row.BillId));
-        row.ShareCommand = new AsyncRelayCommand(() => ShareBillAsync(row.BillId));
+        row.ViewCommand = new AsyncRelayCommand(() =>
+            Shell.Current.GoToAsync($"ResultPage?billId={row.BillId}"));
         row.DeleteCommand = new AsyncRelayCommand(() => DeleteBillAsync(row.BillId, row.Name));
         row.DoneCommand = new AsyncRelayCommand(async () =>
         {
@@ -280,14 +280,4 @@ public partial class HomeViewModel : BaseViewModel
         await LoadAsync();
     }
 
-    private async Task ShareBillAsync(int billId)
-    {
-        var detail = await _db.GetBillDetailAsync(billId);
-        if (detail is null) return;
-        await Share.Default.RequestAsync(new ShareTextRequest
-        {
-            Title = detail.Bill.Name,
-            Text = SummaryText.ForBill(detail),
-        });
-    }
 }
