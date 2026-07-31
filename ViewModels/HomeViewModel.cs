@@ -34,12 +34,15 @@ public partial class BillRowVM : ObservableObject
 public partial class CategoryGroupVM : ObservableObject
 {
     static readonly Color Surface2 = Color.FromArgb("#F6F8F4");
-    static readonly Color Accent = Color.FromArgb("#1F8A5B");       // deep green — categories (like the tab)
+    static readonly Color Accent = Color.FromArgb("#1F8A5B");       // deep green — settled (Done tab)
     static readonly Color AccentDark = Color.FromArgb("#166F4A");   // darker green (drag-over / edge)
+    static readonly Color PendingBg = Color.FromArgb("#2E3D34");    // deep ink-green — still open (Pending tab)
+    static readonly Color PendingDark = Color.FromArgb("#212C25");  // darker ink (drag-over / edge)
     static readonly Color Line = Color.FromArgb("#E7EAE4");
     static readonly Color TextC = Color.FromArgb("#16201A");
     static readonly Color Sub = Color.FromArgb("#6A756F");
     static readonly Color SubOnGreen = Color.FromArgb("#CFE7DA");   // muted text on green
+    static readonly Color SubOnInk = Color.FromArgb("#C3D0C7");     // muted text on ink
     static readonly Color SpecialDragBg = Color.FromArgb("#DCEEE4");
 
     public int CategoryId { get; set; }
@@ -58,14 +61,19 @@ public partial class CategoryGroupVM : ObservableObject
     partial void OnIsExpandedChanged(bool value) => OnPropertyChanged(nameof(Chevron));
 
     [ObservableProperty] private bool isDragOver;
-    // Categories use the deep tab-green with light text so they stand out from
-    // the white bill cards; the Uncategorized bucket stays neutral grey.
+    // Categories get a dark header with light text so they stand out from the
+    // white bill cards: ink-green while pending, brand green once settled.
+    // The Uncategorized bucket stays neutral grey.
     public Color HeaderBg => IsSpecial
         ? (IsDragOver ? SpecialDragBg : Surface2)
-        : (IsDragOver ? AccentDark : Accent);
-    public Color HeaderStroke => IsSpecial ? (IsDragOver ? Accent : Line) : AccentDark;
+        : IsDone
+            ? (IsDragOver ? AccentDark : Accent)
+            : (IsDragOver ? PendingDark : PendingBg);
+    public Color HeaderStroke => IsSpecial
+        ? (IsDragOver ? Accent : Line)
+        : (IsDone ? AccentDark : PendingDark);
     public Color TitleColor => IsSpecial ? TextC : Colors.White;
-    public Color SubColor => IsSpecial ? Sub : SubOnGreen;
+    public Color SubColor => IsSpecial ? Sub : (IsDone ? SubOnGreen : SubOnInk);
     partial void OnIsDragOverChanged(bool value)
     {
         OnPropertyChanged(nameof(HeaderBg));
