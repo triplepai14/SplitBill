@@ -99,7 +99,8 @@
                 </VerticalStackLayout>
 
                 <!-- Who pays whom, across every bill in this category -->
-                <VerticalStackLayout IsVisible="{Binding HasSettlements}" Spacing="0">
+                <VerticalStackLayout x:Name="SettleUpSection" IsVisible="{Binding HasSettlements}"
+                                     Spacing="0" BackgroundColor="{StaticResource AppBg}" Padding="0,0,0,8">
                     <Label Text="SETTLE UP · WHOLE CATEGORY" Style="{StaticResource SectionLabel}"
                            Margin="4,22,4,11" />
                     <VerticalStackLayout Spacing="9" BindableLayout.ItemsSource="{Binding Settlements}">
@@ -140,7 +141,7 @@
 
                 <!-- Share / danger zone -->
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,26,0,0">
-                    <Button Grid.Column="0" Text="📤  Share" Command="{Binding ShareCommand}"
+                    <Button Grid.Column="0" Text="📤  Share" Clicked="OnShareClicked"
                             BackgroundColor="Transparent" TextColor="{StaticResource Accent}"
                             BorderColor="#BFDECB" BorderWidth="1"
                             FontFamily="PJSansBold" FontSize="14"

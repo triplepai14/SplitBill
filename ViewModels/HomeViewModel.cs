@@ -21,6 +21,7 @@ public partial class BillRowVM : ObservableObject
     // Pending bills are tinted green; settled ones stay plain white.
     public Color CardBg { get; set; } = Colors.White;
     public Color CardSub { get; set; } = Color.FromArgb("#6A756F");
+    public bool ShowShare { get; set; }              // sharing a bill is a Done-tab action
 
     public bool CanToggleDone { get; set; }          // only uncategorized bills
     [ObservableProperty] private bool isDone;
@@ -55,7 +56,10 @@ public partial class CategoryGroupVM : ObservableObject
     public string CountLabel { get; set; } = "";
     public string TotalLabel { get; set; } = "";
     public bool IsDone { get; set; }
-    public bool ShowActions => !IsSpecial;           // done/view only for real categories
+    public bool ShowActions => !IsSpecial;           // total/view only for real categories
+    // Only settled categories offer a toggle (to reopen); marking one done
+    // happens on its summary page.
+    public bool ShowDoneToggle => !IsSpecial && IsDone;
     public string DoneLabel => IsDone ? "↩ Reopen" : "✓ Done";
 
     public ObservableCollection<BillRowVM> Bills { get; } = new();
@@ -209,6 +213,7 @@ public partial class HomeViewModel : BaseViewModel
             IsDone = b.IsDone,
             CardBg = ShowDone ? Colors.White : Color.FromArgb("#99CC9D"),
             CardSub = ShowDone ? Color.FromArgb("#6A756F") : Color.FromArgb("#33452F"),
+            ShowShare = ShowDone,
         };
         row.OpenCommand = new AsyncRelayCommand(() => EditBillAsync(row.BillId));
         row.ShareCommand = new AsyncRelayCommand(() => ShareBillAsync(row.BillId));
