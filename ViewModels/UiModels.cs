@@ -29,7 +29,7 @@ public class AvatarVM
         };
 }
 
-public enum ChipVariant { Category, Person, Payer, Exclude }
+public enum ChipVariant { Category, Person, Payer, Exclude, Add }
 
 /// <summary>
 /// A selectable pill. Its look derives entirely from <see cref="Active"/> and
@@ -63,6 +63,7 @@ public partial class ToggleChip : ObservableObject
 
     public Color Background => Variant switch
     {
+        ChipVariant.Add => AccentSoft,
         ChipVariant.Category => Active ? Accent : Surface,
         ChipVariant.Payer => Active ? Accent : Surface,
         ChipVariant.Person => Active ? AccentSoft : Surface,
@@ -72,6 +73,7 @@ public partial class ToggleChip : ObservableObject
 
     public Color TextColor => Variant switch
     {
+        ChipVariant.Add => Accent,
         ChipVariant.Category => Active ? Colors.White : Sub,
         ChipVariant.Payer => Active ? Colors.White : Sub,
         ChipVariant.Person => Active ? Text : Sub,
@@ -81,6 +83,7 @@ public partial class ToggleChip : ObservableObject
 
     public Color StrokeColor => Variant switch
     {
+        ChipVariant.Add => Accent,
         ChipVariant.Category => Active ? Accent : Line,
         ChipVariant.Payer => Active ? Accent : Line,
         ChipVariant.Person => Active ? Accent : Line,

@@ -232,6 +232,25 @@ public partial class CreateBillViewModel : BaseViewModel
         CategoryChips.Add(MakeCatChip(0, "None"));
         foreach (var c in await _db.GetCategoriesAsync())
             CategoryChips.Add(MakeCatChip(c.Id, c.Name));
+        CategoryChips.Add(MakePlusChip(ToggleAddCategoryCommand));
+    }
+
+    // A "＋" pill that sits after the chips and reveals the add-new input.
+    private static ToggleChip MakePlusChip(System.Windows.Input.ICommand toggle) => new()
+    {
+        Id = -1,
+        Name = "＋",
+        Variant = ChipVariant.Add,
+        ToggleCommand = toggle,
+    };
+
+    // Keep the "＋" pill last when a new chip is added.
+    private static void InsertBeforePlus(ObservableCollection<ToggleChip> chips, ToggleChip chip)
+    {
+        if (chips.Count > 0 && chips[^1].Variant == ChipVariant.Add)
+            chips.Insert(chips.Count - 1, chip);
+        else
+            chips.Add(chip);
     }
 
     private ToggleChip MakeCatChip(int id, string name)
@@ -260,7 +279,7 @@ public partial class CreateBillViewModel : BaseViewModel
         var cat = await _db.SaveCategoryAsync(name);
         NewCategoryName = string.Empty;
         var chip = MakeCatChip(cat.Id, cat.Name);
-        CategoryChips.Add(chip);
+        InsertBeforePlus(CategoryChips, chip);
         SelectCategory(chip);
         ShowAddCategory = false;   // done — tuck the input away again
     }
@@ -282,6 +301,7 @@ public partial class CreateBillViewModel : BaseViewModel
             chip.ToggleCommand = new RelayCommand(() => TogglePerson(chip));
             PeopleChips.Add(chip);
         }
+        PeopleChips.Add(MakePlusChip(ToggleAddPersonCommand));
     }
 
     private void TogglePerson(ToggleChip chip)
@@ -319,7 +339,7 @@ public partial class CreateBillViewModel : BaseViewModel
             Active = true,
         };
         chip.ToggleCommand = new RelayCommand(() => TogglePerson(chip));
-        PeopleChips.Add(chip);
+        InsertBeforePlus(PeopleChips, chip);
 
         Draft.PeopleIds.Add(person.Id);
         Draft.PayerId ??= person.Id;

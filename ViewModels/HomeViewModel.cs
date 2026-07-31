@@ -31,7 +31,6 @@ public partial class BillRowVM : ObservableObject
     public ICommand? OpenCommand { get; set; }
     public ICommand? ShareCommand { get; set; }
     public ICommand? DeleteCommand { get; set; }
-    public ICommand? MoveCommand { get; set; }
     public ICommand? DoneCommand { get; set; }
 }
 
@@ -218,7 +217,6 @@ public partial class HomeViewModel : BaseViewModel
         row.OpenCommand = new AsyncRelayCommand(() => EditBillAsync(row.BillId));
         row.ShareCommand = new AsyncRelayCommand(() => ShareBillAsync(row.BillId));
         row.DeleteCommand = new AsyncRelayCommand(() => DeleteBillAsync(row.BillId, row.Name));
-        row.MoveCommand = new AsyncRelayCommand(() => MovePickerAsync(row));
         row.DoneCommand = new AsyncRelayCommand(async () =>
         {
             await _db.SetBillDoneAsync(row.BillId, !row.IsDone);
@@ -248,19 +246,6 @@ public partial class HomeViewModel : BaseViewModel
     {
         await _db.SetCategoryDoneAsync(categoryId, done);
         await LoadAsync();
-    }
-
-    private async Task MovePickerAsync(BillRowVM bill)
-    {
-        var cats = await _db.GetCategoriesAsync();
-        var names = cats.Select(c => c.Name).ToArray();
-        var choice = await Shell.Current.DisplayActionSheetAsync(
-            "Move to…", "Cancel", "Remove from category", names);
-        if (string.IsNullOrEmpty(choice) || choice == "Cancel") return;
-
-        var target = choice == "Remove from category"
-            ? 0 : cats.FirstOrDefault(c => c.Name == choice)?.Id ?? 0;
-        await MoveBillAsync(bill, target);
     }
 
     // ---------- speed-dial FAB ----------

@@ -74,7 +74,8 @@
                             <FlexLayout Wrap="Wrap" Direction="Row"
                                         BindableLayout.ItemsSource="{Binding CategoryChips}"
                                         BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
-                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0"
+                                  IsVisible="{Binding ShowAddCategory}">
                                 <Border Grid.Column="0" Style="{StaticResource Field}" StrokeShape="RoundRectangle 12">
                                     <Entry Text="{Binding NewCategoryName}" Placeholder="New category…" FontSize="14" />
                                 </Border>
@@ -88,7 +89,8 @@
                             <FlexLayout Wrap="Wrap" Direction="Row"
                                         BindableLayout.ItemsSource="{Binding PeopleChips}"
                                         BindableLayout.ItemTemplate="{StaticResource ChipTemplate}" />
-                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0"
+                                  IsVisible="{Binding ShowAddPerson}">
                                 <Border Grid.Column="0" Style="{StaticResource Field}" StrokeShape="RoundRectangle 12">
                                     <Entry Text="{Binding NewPersonName}" Placeholder="Add someone new…" FontSize="14" />
                                 </Border>
