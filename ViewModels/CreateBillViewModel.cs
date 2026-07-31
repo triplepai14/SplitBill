@@ -89,6 +89,9 @@ public partial class CreateBillViewModel : BaseViewModel
     // Footer button: creating shows the result next, editing just saves.
     [ObservableProperty] private string finishLabel = "See who owes what";
 
+    // Share/delete only make sense for a bill that already exists.
+    [ObservableProperty] private bool isExistingBill;
+
     // The add-new-category / add-new-person inputs stay hidden until the
     // little + button next to the section header is tapped.
     [ObservableProperty] private bool showAddCategory;
@@ -191,6 +194,7 @@ public partial class CreateBillViewModel : BaseViewModel
     {
         PageTitle = Draft.BillId == 0 ? "New bill" : "Edit bill";
         FinishLabel = Draft.BillId == 0 ? "See who owes what" : "Save changes";
+        IsExistingBill = Draft.BillId != 0;
         BillName = Draft.Name;
         TotalText = Draft.TotalText;
         BillDate = Draft.Date.Date;
@@ -482,4 +486,33 @@ public partial class CreateBillViewModel : BaseViewModel
 
     [RelayCommand]
     private async Task BackAsync() => await Shell.Current.GoToAsync("..");
+
+    // Shares the bill as last saved — save your edits first to include them.
+    [RelayCommand]
+    private async Task ShareAsync()
+    {
+        if (Draft.BillId == 0) return;
+        var detail = await _db.GetBillDetailAsync(Draft.BillId);
+        if (detail is null) return;
+
+        await Share.Default.RequestAsync(new ShareTextRequest
+        {
+            Title = detail.Bill.Name,
+            Text = SummaryText.ForBill(detail),
+        });
+    }
+
+    [RelayCommand]
+    private async Task DeleteAsync()
+    {
+        if (Draft.BillId == 0) return;
+        var name = string.IsNullOrWhiteSpace(BillName) ? "This bill" : BillName.Trim();
+        var confirmed = await Shell.Current.DisplayAlertAsync("Delete bill?",
+            $"\"{name}\" will be removed permanently.", "Delete", "Cancel");
+        if (!confirmed) return;
+
+        await _db.DeleteBillAsync(Draft.BillId);
+        _drafts.Clear();
+        await Shell.Current.GoToAsync("//HomePage");
+    }
 }

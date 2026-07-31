@@ -218,6 +218,21 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- Share / danger zone (existing bills only) -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,6,0,0"
+                      IsVisible="{Binding IsExistingBill}">
+                    <Button Grid.Column="0" Text="📤  Share" Command="{Binding ShareCommand}"
+                            BackgroundColor="Transparent" TextColor="{StaticResource Accent}"
+                            BorderColor="#BFDECB" BorderWidth="1"
+                            FontFamily="PJSansBold" FontSize="14"
+                            CornerRadius="14" HeightRequest="46" />
+                    <Button Grid.Column="1" Text="🗑  Delete bill" Command="{Binding DeleteCommand}"
+                            BackgroundColor="Transparent" TextColor="#C63A3A"
+                            BorderColor="#EAC7C7" BorderWidth="1"
+                            FontFamily="PJSansBold" FontSize="14"
+                            CornerRadius="14" HeightRequest="46" />
+                </Grid>
+
             </VerticalStackLayout>
         </ScrollView>
 
