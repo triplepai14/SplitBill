@@ -16,7 +16,7 @@ public class MainActivity : MauiAppCompatActivity
     // settings) makes dragging a card feel sluggish. We watch touches here —
     // rather than attaching a touch listener, which would swallow MAUI's tap
     // gestures — and fire the long-click sooner.
-    const int QuickDragHoldMs = 250;
+    const int QuickDragHoldMs = 125;
     const float SlopPx = 30f;
 
     Handler? _dragHandler;
