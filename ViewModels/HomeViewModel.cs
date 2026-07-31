@@ -55,7 +55,9 @@ public partial class CategoryGroupVM : ObservableObject
     public string CountLabel { get; set; } = "";
     public string TotalLabel { get; set; } = "";
     public bool IsDone { get; set; }
-    public bool ShowActions => !IsSpecial;           // total/view only for real categories
+    public bool ShowActions { get; set; } = true;    // total + View (hidden when there's nothing to show)
+    // "View ›" is white on the dark category headers, green on the brown one.
+    public Color ViewColor => IsSpecial ? Accent : Colors.White;
     // Only settled categories offer a toggle (to reopen); marking one done
     // happens on its summary page.
     public bool ShowDoneToggle => !IsSpecial && IsDone;
@@ -182,8 +184,12 @@ public partial class HomeViewModel : BaseViewModel
                     CountLabel = uncat.Count > 0
                         ? $"{uncat.Count} bill{(uncat.Count == 1 ? "" : "s")}"
                         : "Drop a bill here to remove it from a category",
+                    TotalLabel = BillMath.Money(uncat.Sum(b => b.Total)),
+                    ShowActions = uncat.Count > 0,
                 };
                 group.ToggleCommand = new RelayCommand(() => group.IsExpanded = !group.IsExpanded);
+                group.OpenSummaryCommand = new AsyncRelayCommand(() => Shell.Current.GoToAsync(
+                    $"CategoryPage?categoryId={CategoryViewModel.UncategorizedId}"));
                 foreach (var b in uncat) group.Bills.Add(MakeBillRow(b));
                 Groups.Add(group);
             }

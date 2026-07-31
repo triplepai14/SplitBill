@@ -154,7 +154,10 @@ public class DatabaseService
     /// </summary>
     public async Task<CategoryStats?> GetCategoryStatsAsync(int categoryId)
     {
-        var cat = await GetCategoryAsync(categoryId);
+        // Id 0 isn't a real row — it stands for the bills filed nowhere.
+        var cat = categoryId == 0
+            ? new Category { Id = 0, Name = "Uncategorized" }
+            : await GetCategoryAsync(categoryId);
         if (cat is null) return null;
 
         var bills = await GetBillsAsync(categoryId);

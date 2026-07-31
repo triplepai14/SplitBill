@@ -32,7 +32,15 @@ public partial class CategoryViewModel : BaseViewModel
     private Category? _category;
     private bool _suppressDateSave;
 
+    // The home page passes -1 for the Uncategorized bucket; 0 means "nothing
+    // selected yet", so it can't double as the bucket's id.
+    public const int UncategorizedId = -1;
+
     [ObservableProperty] private int categoryId;
+    [ObservableProperty] private bool isRealCategory = true;
+    public string SettleTitle => IsRealCategory
+        ? "SETTLE UP · WHOLE CATEGORY" : "SETTLE UP · ALL UNCATEGORIZED";
+    partial void OnIsRealCategoryChanged(bool value) => OnPropertyChanged(nameof(SettleTitle));
     [ObservableProperty] private string catTitle = "";
     [ObservableProperty] private string catTotalLabel = "";
     [ObservableProperty] private string catCountLabel = "";
@@ -60,7 +68,8 @@ public partial class CategoryViewModel : BaseViewModel
     {
         if (CategoryId == 0) return;
 
-        var s = await _db.GetCategoryStatsAsync(CategoryId);
+        IsRealCategory = CategoryId != UncategorizedId;
+        var s = await _db.GetCategoryStatsAsync(IsRealCategory ? CategoryId : 0);
         if (s is null) return;
         _stats = s;
         _category = s.Category;
@@ -118,7 +127,7 @@ public partial class CategoryViewModel : BaseViewModel
 
     partial void OnCatDateChanged(DateTime value)
     {
-        if (_suppressDateSave || _category is null) return;
+        if (_suppressDateSave || _category is null || !IsRealCategory) return;
         _category.Date = value;
         _ = _db.UpdateCategoryAsync(_category);
     }
@@ -126,7 +135,7 @@ public partial class CategoryViewModel : BaseViewModel
     [RelayCommand]
     private async Task ToggleDoneAsync()
     {
-        if (_category is null) return;
+        if (_category is null || !IsRealCategory) return;
         await _db.SetCategoryDoneAsync(_category.Id, !_category.IsDone);
         IsDone = !IsDone;
         _category.IsDone = IsDone;
@@ -135,7 +144,7 @@ public partial class CategoryViewModel : BaseViewModel
     [RelayCommand]
     private async Task RenameAsync()
     {
-        if (_category is null) return;
+        if (_category is null || !IsRealCategory) return;
         var name = await Shell.Current.DisplayPromptAsync(
             "Rename category", "Name", "Save", "Cancel", initialValue: _category.Name);
         if (string.IsNullOrWhiteSpace(name)) return;
@@ -162,6 +171,7 @@ public partial class CategoryViewModel : BaseViewModel
     [RelayCommand]
     private async Task DeleteAsync()
     {
+        if (!IsRealCategory) return;
         var confirmed = await Shell.Current.DisplayAlertAsync("Delete category?",
             $"\"{CatTitle}\" and all {Bills.Count} bill{(Bills.Count == 1 ? "" : "s")} in it will be removed permanently.",
             "Delete", "Cancel");

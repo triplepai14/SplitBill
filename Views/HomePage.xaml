@@ -122,7 +122,7 @@
                                                         FontSize="12" CornerRadius="9" HeightRequest="30"
                                                         Padding="10,0" BorderWidth="0" />
                                                 <Button Text="View ›" Command="{Binding OpenSummaryCommand}"
-                                                        BackgroundColor="Transparent" TextColor="White"
+                                                        BackgroundColor="Transparent" TextColor="{Binding ViewColor}"
                                                         FontFamily="PJSansBold" FontSize="12" Padding="2,0"
                                                         BorderWidth="0" HeightRequest="30" />
                                             </HorizontalStackLayout>

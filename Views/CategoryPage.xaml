@@ -15,6 +15,7 @@
             <Label Grid.Column="1" Text="{Binding CatTitle}" Style="{StaticResource H2}"
                    VerticalOptions="Center" LineBreakMode="TailTruncation" />
             <Button Grid.Column="2" Text="Rename" Command="{Binding RenameCommand}"
+                    IsVisible="{Binding IsRealCategory}"
                     BackgroundColor="{StaticResource Surface}" TextColor="{StaticResource Accent}"
                     FontFamily="PJSansBold" FontSize="14" CornerRadius="12" BorderWidth="0"
                     HeightRequest="40" Padding="14,0" />
@@ -34,7 +35,8 @@
                 </Border>
 
                 <!-- Date + done toggle -->
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,12,0,0">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,12,0,0"
+                      IsVisible="{Binding IsRealCategory}">
                     <Border Grid.Column="0" Style="{StaticResource Field}">
                         <DatePicker Date="{Binding CatDate}" Format="ddd d MMM yyyy"
                                     FontFamily="PJSans" TextColor="{StaticResource TextColor}" />
@@ -101,7 +103,7 @@
                 <!-- Who pays whom, across every bill in this category -->
                 <VerticalStackLayout x:Name="SettleUpSection" IsVisible="{Binding HasSettlements}"
                                      Spacing="0" BackgroundColor="{StaticResource AppBg}" Padding="0,0,0,8">
-                    <Label Text="SETTLE UP · WHOLE CATEGORY" Style="{StaticResource SectionLabel}"
+                    <Label Text="{Binding SettleTitle}" Style="{StaticResource SectionLabel}"
                            Margin="4,22,4,11" />
                     <VerticalStackLayout Spacing="9" BindableLayout.ItemsSource="{Binding Settlements}">
                         <BindableLayout.ItemTemplate>
@@ -147,6 +149,7 @@
                             FontFamily="PJSansBold" FontSize="14"
                             CornerRadius="14" HeightRequest="46" />
                     <Button Grid.Column="1" Text="🗑  Delete category" Command="{Binding DeleteCommand}"
+                            IsVisible="{Binding IsRealCategory}"
                             BackgroundColor="Transparent" TextColor="#C63A3A"
                             BorderColor="#EAC7C7" BorderWidth="1"
                             FontFamily="PJSansBold" FontSize="14"
