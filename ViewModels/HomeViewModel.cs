@@ -18,7 +18,7 @@ public partial class BillRowVM : ObservableObject
     public string CountLabel { get; set; } = "";
     public List<AvatarVM> Avatars { get; set; } = new();
 
-    // Pending bills are tinted green; settled ones stay plain white.
+    // Pending bills are tinted green; settled ones go light grey.
     public Color CardBg { get; set; } = Colors.White;
     public Color CardSub { get; set; } = Color.FromArgb("#6A756F");
     public bool ShowShare { get; set; }              // sharing a bill is a Done-tab action
@@ -211,7 +211,7 @@ public partial class HomeViewModel : BaseViewModel
             Avatars = avatars,
             CanToggleDone = b.CategoryId == 0,
             IsDone = b.IsDone,
-            CardBg = ShowDone ? Colors.White : Color.FromArgb("#99CC9D"),
+            CardBg = ShowDone ? Color.FromArgb("#E4E8E2") : Color.FromArgb("#99CC9D"),
             CardSub = ShowDone ? Color.FromArgb("#6A756F") : Color.FromArgb("#33452F"),
             ShowShare = ShowDone,
         };
